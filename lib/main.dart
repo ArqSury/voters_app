@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:voters_app/start_page.dart';
+import 'package:voters_app/branches/about_app.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const StartPage(),
+      home: const AboutApp(),
     );
   }
 }
