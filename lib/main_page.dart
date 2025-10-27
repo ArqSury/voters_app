@@ -29,30 +29,32 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(child: Center(child: _barOptions.elementAt(_selectedBar))),
-      bottomNavigationBar: CurvedNavigationBar(
-        key: _bottomNavigationKey,
-        items: [
-          CurvedNavigationBarItem(
-            child: Icon(Icons.home_outlined, color: Colors.white),
-            label: 'Layar Utama',
-            labelStyle: TextStyle(color: Colors.white),
-          ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.bar_chart),
-            label: 'Hasil Perhitungan',
-            labelStyle: TextStyle(color: Colors.white),
-          ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.notifications),
-            label: 'Notifikasi',
-            labelStyle: TextStyle(color: Colors.white),
-          ),
-        ],
-        onTap: _barTapped,
-        backgroundColor: Colors.white,
-        color: Colors.red,
+    return SafeArea(
+      child: Scaffold(
+        body: Center(child: _barOptions.elementAt(_selectedBar)),
+        bottomNavigationBar: CurvedNavigationBar(
+          key: _bottomNavigationKey,
+          items: [
+            CurvedNavigationBarItem(
+              child: Icon(Icons.home_outlined, color: Colors.white),
+              label: 'Layar Utama',
+              labelStyle: TextStyle(color: Colors.white),
+            ),
+            CurvedNavigationBarItem(
+              child: Icon(Icons.bar_chart, color: Colors.white),
+              label: 'Hasil Perhitungan',
+              labelStyle: TextStyle(color: Colors.white),
+            ),
+            CurvedNavigationBarItem(
+              child: Icon(Icons.notifications, color: Colors.white),
+              label: 'Notifikasi',
+              labelStyle: TextStyle(color: Colors.white),
+            ),
+          ],
+          onTap: _barTapped,
+          backgroundColor: Colors.white,
+          color: Colors.red,
+        ),
       ),
     );
   }
