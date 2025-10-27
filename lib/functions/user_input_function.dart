@@ -22,12 +22,12 @@ class UserInputFunction extends StatefulWidget {
 }
 
 class _UserInputFunctionState extends State<UserInputFunction> {
-  final bool _obscureText = true;
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      keyboardType: widget.isNumber ? widget.inputType : null,
+      keyboardType: widget.isNumber ? TextInputType.number : null,
       obscureText: widget.isPassword ? _obscureText : false,
       controller: widget.textController,
       validator: widget.textValidator,
@@ -36,12 +36,23 @@ class _UserInputFunctionState extends State<UserInputFunction> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: Colors.black, width: 1.0),
+          borderSide: BorderSide(color: Colors.black),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.black, width: 1.0),
+          borderSide: BorderSide(color: Colors.black),
         ),
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                onPressed: () {
+                  _obscureText = !_obscureText;
+                  setState(() {});
+                },
+                icon: Icon(
+                  _obscureText ? Icons.visibility : Icons.visibility_off,
+                ),
+              )
+            : null,
       ),
     );
   }
