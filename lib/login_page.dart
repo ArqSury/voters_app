@@ -77,11 +77,6 @@ class _LoginPageState extends State<LoginPage> {
                               textController: numbC,
                               isNumber: true,
                             ),
-                            Text('Password:', style: TextStyle(fontSize: 16)),
-                            UserInputFunction(
-                              hint: 'Masukan Password Anda',
-                              isPassword: true,
-                            ),
                           ],
                         ),
                       ),
