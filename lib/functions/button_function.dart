@@ -35,7 +35,7 @@ class _ButtonFunctionState extends State<ButtonFunction> {
         widget.buttonText,
         style: TextStyle(
           color: widget.color,
-          fontSize: 30,
+          fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
       ),

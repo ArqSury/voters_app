@@ -12,7 +12,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController nameC = TextEditingController();
   final TextEditingController provC = TextEditingController();
-  final TextEditingController numbC = TextEditingController();
+  final TextEditingController nikC = TextEditingController();
   final TextEditingController passC = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -33,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 740,
                   width: 360,
                   margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -40,20 +41,18 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Column(
                     children: [
-                      Image(
-                        image: AssetImage(
-                          'assets/images/logo/logoapp_final.png',
-                        ),
-                        height: 120,
-                        width: 200,
-                      ),
                       Text(
                         'Selamat Datang',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 30,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Times New Roman',
                         ),
+                      ),
+                      Divider(color: Colors.black),
+                      Text(
+                        'Isi Biodata Anda',
+                        style: TextStyle(fontStyle: FontStyle.italic),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(12.0),
@@ -61,35 +60,107 @@ class _LoginPageState extends State<LoginPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 8,
                           children: [
-                            Text('Nama:', style: TextStyle(fontSize: 16)),
+                            Text(
+                              'Nama:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             UserInputFunction(
-                              hint: 'Masukan Nama',
+                              hint: 'Nama',
                               textController: nameC,
+                              textValidator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '*Wajib diisi';
+                                }
+                                return null;
+                              },
                             ),
-                            Text('Provinsi:', style: TextStyle(fontSize: 16)),
+                            Text(
+                              'Provinsi:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             UserInputFunction(
-                              hint: 'Masukan provinsi Anda',
+                              hint: 'Provinsi',
                               textController: provC,
+                              textValidator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '*Wajib diisi';
+                                }
+                                return null;
+                              },
                             ),
-                            Text('No.Hp:', style: TextStyle(fontSize: 16)),
+                            Text(
+                              'ID:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             UserInputFunction(
-                              hint: 'Masukan No.Hp / Whatsapp Anda',
-                              textController: numbC,
+                              hint: 'Nomor Induk Kependudukan (NIK)',
+                              textController: nikC,
                               isNumber: true,
+                              textValidator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '*Wajib diisi';
+                                }
+                                return null;
+                              },
+                            ),
+                            Text(
+                              'Kata Sandi:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            UserInputFunction(
+                              hint: 'Kata Sandi',
+                              textController: passC,
+                              isPassword: true,
+                              textValidator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '*Wajib diisi';
+                                }
+                                return null;
+                              },
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 40),
+                      SizedBox(height: 30),
                       ButtonFunction(
                         buttonText: 'Masuk',
-                        buttonWidth: 100,
-                        buttonHeight: 60,
+                        buttonWidth: 50,
+                        buttonHeight: 50,
                         color: Colors.white,
                         backgroundColor: Colors.red,
                         pressButton: () {
                           setState(() {});
                         },
+                      ),
+                      SizedBox(height: 30),
+                      Divider(color: Colors.black),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Tidak punya akun?'),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {});
+                            },
+                            child: Text(
+                              'Daftar',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

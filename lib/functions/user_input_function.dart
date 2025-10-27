@@ -33,6 +33,7 @@ class _UserInputFunctionState extends State<UserInputFunction> {
       validator: widget.textValidator,
       decoration: InputDecoration(
         hintText: widget.hint,
+        hintStyle: TextStyle(fontSize: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
