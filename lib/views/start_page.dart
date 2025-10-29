@@ -10,26 +10,30 @@ class StartPage extends StatefulWidget {
 class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.red, Colors.white],
+                      colors: [Color(0xFFF5DAA7), Color(0xFF957C62)],
                       begin: AlignmentDirectional.topCenter,
                       end: AlignmentDirectional.bottomCenter,
                     ),
                   ),
-                  child: Image(
-                    image: AssetImage(
-                      "assets/images/logo/logo_voterson_nobg2.png",
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image(
+                        image: AssetImage(
+                          'assets/images/logo/logo_voterson_nobg2.png',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

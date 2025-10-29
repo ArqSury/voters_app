@@ -33,6 +33,7 @@ dependencies:
   flutter:
     sdk: flutter
   fluttertoast: ^9.0.0
+  google_nav_bar: ^5.0.7
   intl: ^0.20.2
   polls: ^1.0.1
   shared_preferences: ^2.5.3

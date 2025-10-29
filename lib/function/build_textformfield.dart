@@ -1,46 +1,46 @@
 import 'package:flutter/material.dart';
 
-class UserInputFunction extends StatefulWidget {
-  const UserInputFunction({
+class BuildTextformfield extends StatefulWidget {
+  const BuildTextformfield({
     super.key,
     required this.hint,
+    this.validator,
     this.isPassword = false,
     this.isNumber = false,
-    this.inputType,
-    this.textController,
-    this.textValidator,
+    this.controller,
   });
   final String hint;
+  final String? Function(String?)? validator;
   final bool isPassword;
   final bool isNumber;
-  final TextInputType? inputType;
-  final TextEditingController? textController;
-  final String? Function(String?)? textValidator;
+  final TextEditingController? controller;
 
   @override
-  State<UserInputFunction> createState() => _UserInputFunctionState();
+  State<BuildTextformfield> createState() => _BuildTextformfieldState();
 }
 
-class _UserInputFunctionState extends State<UserInputFunction> {
+class _BuildTextformfieldState extends State<BuildTextformfield> {
   bool _obscureText = true;
-
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       keyboardType: widget.isNumber ? TextInputType.number : null,
+
       obscureText: widget.isPassword ? _obscureText : false,
-      controller: widget.textController,
-      validator: widget.textValidator,
+      validator: widget.validator,
+      controller: widget.controller,
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: TextStyle(fontSize: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderSide: BorderSide(color: Colors.black),
+        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
           borderSide: BorderSide(color: Colors.black),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
           borderSide: BorderSide(color: Colors.black),
         ),
         suffixIcon: widget.isPassword
