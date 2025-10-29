@@ -25,11 +25,12 @@ class _BuildTextformfieldState extends State<BuildTextformfield> {
   Widget build(BuildContext context) {
     return TextFormField(
       keyboardType: widget.isNumber ? TextInputType.number : null,
-
       obscureText: widget.isPassword ? _obscureText : false,
       validator: widget.validator,
       controller: widget.controller,
       decoration: InputDecoration(
+        fillColor: Colors.white,
+        filled: true,
         hintText: widget.hint,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),

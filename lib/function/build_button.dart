@@ -39,7 +39,11 @@ class _BuildButtonState extends State<BuildButton> {
         ),
         child: Text(
           widget.text,
-          style: TextStyle(fontSize: widget.fontSize, color: widget.color),
+          style: TextStyle(
+            fontSize: widget.fontSize,
+            color: widget.color,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

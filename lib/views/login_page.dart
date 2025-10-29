@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
+import 'package:voters_app/function/build_button.dart';
 import 'package:voters_app/function/build_textformfield.dart';
 
 class LoginPage extends StatefulWidget {
@@ -37,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
                         fontFamily: 'Times New Roman',
                       ),
                     ),
-                    Divider(color: Colors.black, indent: 40, endIndent: 40),
+                    Divider(color: Colors.black, indent: 60, endIndent: 60),
                     Text(
                       'Isi Biodata Anda',
                       style: TextStyle(fontStyle: FontStyle.italic),
@@ -68,14 +69,14 @@ class _LoginPageState extends State<LoginPage> {
                             },
                           ),
                           Text(
-                            'Password:',
+                            'Kata Sandi:',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           BuildTextformfield(
-                            hint: 'Masukan password Anda',
+                            hint: 'Masukan kata sandi Anda',
                             controller: passCon,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -87,8 +88,50 @@ class _LoginPageState extends State<LoginPage> {
                             },
                             isPassword: true,
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {});
+                                },
+                                child: Text(
+                                  'Lupa Kata Sandi?',
+                                  style: TextStyle(color: AppColor.textButton),
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
+                    ),
+                    BuildButton(
+                      text: 'MASUK',
+                      width: 120,
+                      height: 80,
+                      backgroundColor: AppColor.button,
+                      color: Colors.black,
+                      fontSize: 20,
+                      onPressed: () {
+                        setState(() {});
+                      },
+                    ),
+                    Divider(color: Colors.black, height: 100),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Tidak punya akun?',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {});
+                          },
+                          child: Text('Daftar', style: TextStyle(fontSize: 16)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
