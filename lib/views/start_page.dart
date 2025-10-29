@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:voters_app/views/login_page.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -8,6 +9,22 @@ class StartPage extends StatefulWidget {
 }
 
 class _StartPageState extends State<StartPage> {
+  @override
+  void initState() {
+    super.initState();
+    isLoginFunction();
+  }
+
+  isLoginFunction() async {
+    Future.delayed(Duration(seconds: 3)).then((value) async {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (route) => false,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

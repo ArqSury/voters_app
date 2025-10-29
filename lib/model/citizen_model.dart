@@ -4,7 +4,6 @@ import 'dart:convert';
 class CitizenModel {
   int? id;
   String name;
-  String email;
   String province;
   String password;
   int phone;
@@ -12,7 +11,6 @@ class CitizenModel {
   CitizenModel({
     this.id,
     required this.name,
-    required this.email,
     required this.province,
     required this.password,
     required this.phone,
@@ -23,7 +21,6 @@ class CitizenModel {
     return <String, dynamic>{
       'id': id,
       'name': name,
-      'email': email,
       'province': province,
       'password': password,
       'phone': phone,
@@ -35,7 +32,6 @@ class CitizenModel {
     return CitizenModel(
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] as String,
-      email: map['email'] as String,
       province: map['province'] as String,
       password: map['password'] as String,
       phone: map['phone'] as int,

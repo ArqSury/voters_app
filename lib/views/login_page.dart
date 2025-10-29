@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
+import 'package:voters_app/database/db_helper.dart';
 import 'package:voters_app/function/build_button.dart';
 import 'package:voters_app/function/build_textformfield.dart';
+import 'package:voters_app/views/main_page.dart';
+import 'package:voters_app/views/registration_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -112,8 +115,42 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: AppColor.button,
                       color: Colors.black,
                       fontSize: 20,
-                      onPressed: () {
-                        setState(() {});
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final data = await DbHelper.loginCitizen(
+                            name: nameCon.text,
+                            password: passCon.text,
+                          );
+                          if (data != null) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MainPage(),
+                              ),
+                              (route) => false,
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Akun Salah'),
+                                  content: Text(
+                                    'Isi semua data Anda dengan benar!',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('Kembali'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        }
                       },
                     ),
                     Divider(color: Colors.black, height: 100),
@@ -127,7 +164,14 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            setState(() {});
+                            setState(() {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RegistrationPage(),
+                                ),
+                              );
+                            });
                           },
                           child: Text('Daftar', style: TextStyle(fontSize: 16)),
                         ),
