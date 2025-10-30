@@ -150,13 +150,13 @@ class _UserProfileState extends State<UserProfile> {
                           SizedBox(height: 40),
                           BuildButton(
                             text: 'KELUAR',
-                            width: 200,
-                            height: 100,
+                            width: 120,
+                            height: 80,
                             onPressed: () {
                               _logOut();
                             },
                             backgroundColor: AppColor.button,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ],
                       ),
