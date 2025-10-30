@@ -98,7 +98,7 @@ class _UserProfileState extends State<UserProfile> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColor.backup,
+          backgroundColor: AppColor.button,
           title: Text('Profil Anda'),
           actions: [
             IconButton(
@@ -122,7 +122,7 @@ class _UserProfileState extends State<UserProfile> {
                       child: Column(
                         spacing: 20,
                         children: [
-                          SizedBox(height: 40),
+                          SizedBox(height: 20),
                           Container(
                             height: 120,
                             width: 120,
@@ -206,13 +206,7 @@ class _UserProfileState extends State<UserProfile> {
     return Container(
       height: double.infinity,
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColor.background, AppColor.primary, AppColor.secondary],
-          begin: AlignmentDirectional.topStart,
-          end: AlignmentDirectional.bottomEnd,
-        ),
-      ),
+      color: AppColor.background,
     );
   }
 }
