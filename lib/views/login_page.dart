@@ -3,6 +3,7 @@ import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
 import 'package:voters_app/function/build_button.dart';
 import 'package:voters_app/function/build_textformfield.dart';
+import 'package:voters_app/share_preference/preference_handler.dart';
 import 'package:voters_app/views/main_page.dart';
 import 'package:voters_app/views/registration_page.dart';
 
@@ -117,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                       fontSize: 20,
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
+                          PreferenceHandler.saveLogin(true);
                           final data = await DbHelper.loginCitizen(
                             name: nameCon.text,
                             password: passCon.text,

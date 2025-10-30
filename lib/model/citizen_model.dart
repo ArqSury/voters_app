@@ -23,7 +23,7 @@ class CitizenModel {
       'name': name,
       'province': province,
       'password': password,
-      'phone': phone,
+      'noHp': phone,
       'nik': nik,
     };
   }
@@ -34,7 +34,7 @@ class CitizenModel {
       name: map['name'] as String,
       province: map['province'] as String,
       password: map['password'] as String,
-      phone: map['phone'] as int,
+      phone: map['noHp'] as int,
       nik: map['nik'] as int,
     );
   }

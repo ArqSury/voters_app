@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:voters_app/model/citizen_model.dart';
+import 'package:voters_app/share_preference/preference_handler.dart';
 
 class DbHelper {
   static const tableCitizen = 'citizen';
@@ -38,6 +39,7 @@ class DbHelper {
       whereArgs: [name, password],
     );
     if (results.isNotEmpty) {
+      PreferenceHandler.saveId(results.first['id']);
       return CitizenModel.fromMap(results.first);
     }
     return null;
@@ -49,6 +51,19 @@ class DbHelper {
     return results.map((e) => CitizenModel.fromMap(e)).toList();
   }
 
+  static Future<CitizenModel?> getCitizenById(int id) async {
+    final dbs = await db();
+    final List<Map<String, dynamic>> results = await dbs.query(
+      tableCitizen,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (results.isNotEmpty) {
+      return CitizenModel.fromMap(results.first);
+    }
+    return null;
+  }
+
   static Future<void> updateCitizen(CitizenModel citizen) async {
     final dbs = await db();
     await dbs.update(
@@ -58,5 +73,10 @@ class DbHelper {
       whereArgs: [citizen.id],
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  static Future<void> deleteCitizen(int id) async {
+    final dbs = await db();
+    await dbs.delete(tableCitizen, where: 'id = ?', whereArgs: [id]);
   }
 }
