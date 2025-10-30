@@ -116,25 +116,41 @@ class _HomeScreenState extends State<HomeScreen> {
                                         text: 'Pasangan\nCalon\n1',
                                         width: 120,
                                         height: 150,
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          setState(() {});
+                                        },
                                       ),
                                       BuildButton(
                                         text: 'Pasangan\nCalon\n2',
                                         width: 120,
                                         height: 150,
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          setState(() {});
+                                        },
                                       ),
                                       BuildButton(
                                         text: 'Pasangan\nCalon\n3',
                                         width: 120,
                                         height: 150,
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          setState(() {});
+                                        },
                                       ),
                                       BuildButton(
                                         text: 'Pasangan\nCalon\n4',
                                         width: 120,
                                         height: 150,
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          setState(() {});
+                                        },
+                                      ),
+                                      BuildButton(
+                                        text: 'Pasangan\nCalon\n5',
+                                        width: 120,
+                                        height: 150,
+                                        onPressed: () {
+                                          setState(() {});
+                                        },
                                       ),
                                     ],
                                   ),
