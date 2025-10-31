@@ -39,7 +39,7 @@ class _MainPageState extends State<MainPage> {
               label: 'Beranda',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.book),
+              icon: Icon(Icons.person),
               backgroundColor: AppColor.primary,
               label: 'Kandidat',
             ),

@@ -164,6 +164,7 @@ class _UserProfileState extends State<UserProfile> {
               },
               backgroundColor: AppColor.button,
               color: Colors.black,
+              fontSize: 18,
             ),
           ],
         ),
