@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/navigation/about_screen.dart';
+import 'package:voters_app/navigation/candidate_screen.dart';
 import 'package:voters_app/navigation/home_screen.dart';
 import 'package:voters_app/navigation/result_screen.dart';
 
@@ -16,6 +17,7 @@ class _MainPageState extends State<MainPage> {
 
   static const List<Widget> _navOptions = [
     HomeScreen(),
+    CandidateScreen(),
     ResultScreen(),
     AboutScreen(),
   ];
@@ -31,20 +33,30 @@ class _MainPageState extends State<MainPage> {
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
           items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              backgroundColor: AppColor.primary,
+              label: 'Beranda',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              backgroundColor: AppColor.primary,
+              label: 'Kandidat',
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart),
+              backgroundColor: AppColor.primary,
               label: 'Hasil',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.question_mark),
+              backgroundColor: AppColor.primary,
               label: 'Tentang',
             ),
           ],
           currentIndex: _selectedBar,
           selectedItemColor: AppColor.background,
           onTap: _onBarTapped,
-          backgroundColor: AppColor.primary,
         ),
         body: Center(child: _navOptions.elementAt(_selectedBar)),
       ),

@@ -39,32 +39,7 @@ class _UserProfileState extends State<UserProfile> {
     final res = await showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('Ganti Profil'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 12,
-            children: [
-              BuildTextformfield(hint: 'Nama', controller: editNameC),
-              BuildTextformfield(hint: 'No. Hp', controller: editNoHpC),
-              BuildTextformfield(hint: 'Password', controller: editPassC),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Kembali', style: TextStyle(color: Colors.red)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-              child: Text('Simpan', style: TextStyle(color: Colors.blue)),
-            ),
-          ],
-        );
+        return buildEditProfile(editNameC, editNoHpC, editPassC, context);
       },
     );
 
@@ -93,6 +68,40 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
+  AlertDialog buildEditProfile(
+    TextEditingController editNameC,
+    TextEditingController editNoHpC,
+    TextEditingController editPassC,
+    BuildContext context,
+  ) {
+    return AlertDialog(
+      title: Text('Ganti Profil'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 12,
+        children: [
+          BuildTextformfield(hint: 'Nama', controller: editNameC),
+          BuildTextformfield(hint: 'No. Hp', controller: editNoHpC),
+          BuildTextformfield(hint: 'Password', controller: editPassC),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Kembali', style: TextStyle(color: Colors.red)),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+          child: Text('Simpan', style: TextStyle(color: Colors.blue)),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -113,57 +122,51 @@ class _UserProfileState extends State<UserProfile> {
             ? Center(child: CircularProgressIndicator())
             : Stack(
                 alignment: AlignmentDirectional.center,
-                children: [
-                  buildBackground(),
-                  SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        spacing: 20,
-                        children: [
-                          SizedBox(height: 20),
-                          Container(
-                            height: 120,
-                            width: 120,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(blurRadius: 8, color: Colors.black),
-                              ],
-                            ),
-                            child: Image(
-                              image: AssetImage(
-                                'assets/images/logo/profil_foto.jpg',
-                              ),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          buildProfile(text: dataUser?.name ?? ''),
-                          buildProfile(text: dataUser?.nik.toString() ?? ''),
-                          buildProfile(text: dataUser?.province ?? ''),
-                          buildProfile(text: dataUser?.phone.toString() ?? ''),
-                          buildProfile(
-                            text: dataUser?.password ?? '',
-                            isPassword: true,
-                          ),
-                          SizedBox(height: 40),
-                          BuildButton(
-                            text: 'KELUAR',
-                            width: 120,
-                            height: 80,
-                            onPressed: () {
-                              _logOut();
-                            },
-                            backgroundColor: AppColor.button,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                children: [buildBackground(), buildLayer()],
               ),
+      ),
+    );
+  }
+
+  SingleChildScrollView buildLayer() {
+    return SingleChildScrollView(
+      physics: BouncingScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          spacing: 20,
+          children: [
+            SizedBox(height: 20),
+            Container(
+              height: 120,
+              width: 120,
+              decoration: BoxDecoration(
+                boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black)],
+              ),
+              child: Image(
+                image: AssetImage('assets/images/logo/profil_foto.jpg'),
+                fit: BoxFit.fill,
+              ),
+            ),
+            SizedBox(height: 20),
+            buildProfile(text: dataUser?.name ?? ''),
+            buildProfile(text: dataUser?.nik.toString() ?? ''),
+            buildProfile(text: dataUser?.province ?? ''),
+            buildProfile(text: dataUser?.phone.toString() ?? ''),
+            buildProfile(text: dataUser?.password ?? '', isPassword: true),
+            SizedBox(height: 40),
+            BuildButton(
+              text: 'KELUAR',
+              width: 120,
+              height: 80,
+              onPressed: () {
+                _logOut();
+              },
+              backgroundColor: AppColor.button,
+              color: Colors.black,
+            ),
+          ],
+        ),
       ),
     );
   }

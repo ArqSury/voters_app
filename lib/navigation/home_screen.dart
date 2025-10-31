@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
-import 'package:voters_app/function/build_button.dart';
+
 import 'package:voters_app/model/citizen_model.dart';
 import 'package:voters_app/navigation/user_profile.dart';
 import 'package:voters_app/share_preference/preference_handler.dart';
@@ -35,136 +35,104 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         body: dataUser == null
             ? Center(child: CircularProgressIndicator())
-            : Stack(
-                children: [
-                  buildBackground(),
-                  SingleChildScrollView(
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 80,
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(12),
-                            alignment: AlignmentDirectional.centerStart,
-                            decoration: BoxDecoration(
-                              color: AppColor.button,
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(20),
-                                bottomRight: Radius.circular(20),
-                              ),
-                              boxShadow: [BoxShadow(blurRadius: 8)],
-                            ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  'Halo, ${dataUser?.name ?? ''}!',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Spacer(),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => UserProfile(),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    'Lihat Profil',
-                                    style: TextStyle(color: AppColor.secondary),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Container(
-                            height: 240,
-                            width: double.infinity,
-                            margin: const EdgeInsets.all(16),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AppColor.button,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                              boxShadow: [BoxShadow(blurRadius: 8)],
-                            ),
-                            alignment: AlignmentDirectional.topCenter,
-                            child: Column(
-                              spacing: 8,
-                              children: [
-                                Text(
-                                  'Biodata Calon',
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    spacing: 12,
-                                    children: [
-                                      BuildButton(
-                                        text: 'Pasangan\nCalon\n1',
-                                        width: 120,
-                                        height: 150,
-                                        onPressed: () {
-                                          setState(() {});
-                                        },
-                                      ),
-                                      BuildButton(
-                                        text: 'Pasangan\nCalon\n2',
-                                        width: 120,
-                                        height: 150,
-                                        onPressed: () {
-                                          setState(() {});
-                                        },
-                                      ),
-                                      BuildButton(
-                                        text: 'Pasangan\nCalon\n3',
-                                        width: 120,
-                                        height: 150,
-                                        onPressed: () {
-                                          setState(() {});
-                                        },
-                                      ),
-                                      BuildButton(
-                                        text: 'Pasangan\nCalon\n4',
-                                        width: 120,
-                                        height: 150,
-                                        onPressed: () {
-                                          setState(() {});
-                                        },
-                                      ),
-                                      BuildButton(
-                                        text: 'Pasangan\nCalon\n5',
-                                        width: 120,
-                                        height: 150,
-                                        onPressed: () {
-                                          setState(() {});
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            : Stack(children: [buildBackground(), buildLayer(context)]),
       ),
+    );
+  }
+
+  SingleChildScrollView buildLayer(BuildContext context) {
+    return SingleChildScrollView(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              buildUserProfile(context),
+              SizedBox(height: 10),
+              buildUserVote(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container buildUserVote({bool isVoted = false}) {
+    return Container(
+      height: 140,
+      width: double.infinity,
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: decorationContainer(),
+      child: Column(
+        children: [
+          SizedBox(height: 10),
+          Text(
+            'Gunakan Hak Pilihmu!',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              fontFamily: 'Times New Roman',
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 10),
+          TextButton(
+            onPressed: () {
+              setState(() {});
+            },
+            child: isVoted
+                ? Text(
+                    'Voted',
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  )
+                : Text(
+                    'Vote',
+                    style: TextStyle(color: AppColor.textButton, fontSize: 16),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container buildUserProfile(BuildContext context) {
+    return Container(
+      height: 80,
+      width: double.infinity,
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
+      alignment: AlignmentDirectional.centerStart,
+      decoration: decorationContainer(),
+      child: Row(
+        children: [
+          Text(
+            'Halo, ${dataUser?.name ?? ''}!',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          Spacer(),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserProfile()),
+              );
+            },
+            child: Text(
+              'Lihat Profil',
+              style: TextStyle(color: AppColor.secondary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  BoxDecoration decorationContainer() {
+    return BoxDecoration(
+      color: AppColor.backup,
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      boxShadow: [BoxShadow(blurRadius: 8)],
     );
   }
 
@@ -172,7 +140,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       height: double.infinity,
       width: double.infinity,
-      color: AppColor.background,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColor.background, AppColor.primary, AppColor.secondary],
+          begin: AlignmentDirectional.topCenter,
+          end: AlignmentDirectional.bottomCenter,
+        ),
+      ),
     );
   }
 }
