@@ -34,7 +34,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           children: [
             SizedBox(height: 40),
             Text(
-              'Selamat Datang',
+              'Login Admin',
               style: TextStyle(fontSize: 30, fontFamily: 'Times New Roman'),
             ),
             Divider(color: Colors.black, indent: 60, endIndent: 60),
@@ -135,11 +135,11 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             },
           ),
           Text(
-            'Kata Sandi:',
+            'Password:',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           BuildTextformfield(
-            hint: 'Masukan kata sandi Anda',
+            hint: 'Masukan password Anda',
             controller: passwordCon,
             validator: (value) {
               if (value == null || value.isEmpty) {

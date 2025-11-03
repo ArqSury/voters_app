@@ -5,6 +5,7 @@ import 'package:voters_app/function/build_button.dart';
 import 'package:voters_app/function/build_textformfield.dart';
 import 'package:voters_app/model/president_model.dart';
 import 'package:voters_app/model/vice_president_model.dart';
+import 'package:voters_app/views/_admin/admin_login_page.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -96,6 +97,18 @@ class _AdminPageState extends State<AdminPage> {
           title: Text('Pendaftaran Kandidat'),
           centerTitle: true,
           backgroundColor: AppColor.background,
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => AdminLoginPage()),
+                  (route) => false,
+                );
+              },
+              icon: Icon(Icons.logout),
+            ),
+          ],
         ),
         body: Stack(children: [buildBackground(), buildLayer()]),
       ),
@@ -181,8 +194,8 @@ class _AdminPageState extends State<AdminPage> {
                 ),
                 BuildButton(
                   text: 'Daftarkan Kandidat',
-                  width: 200,
-                  height: 200,
+                  width: 180,
+                  height: 80,
                   onPressed: _registerCandidatePair,
                 ),
                 Divider(color: Colors.black, height: 12),

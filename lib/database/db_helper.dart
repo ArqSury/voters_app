@@ -127,7 +127,7 @@ class DbHelper {
   }) async {
     final dbs = await db();
     final List<Map<String, dynamic>> results = await dbs.query(
-      tableCitizen,
+      tableAdmin,
       where: 'username = ? AND password = ?',
       whereArgs: [username, password],
     );
