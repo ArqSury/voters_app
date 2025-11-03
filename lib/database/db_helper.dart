@@ -1,6 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:voters_app/model/admin_model.dart';
 import 'package:voters_app/model/citizen_model.dart';
+import 'package:voters_app/model/president_model.dart';
+import 'package:voters_app/model/vice_president_model.dart';
 import 'package:voters_app/share_preference/preference_handler.dart';
 
 class DbHelper {
@@ -26,11 +29,11 @@ class DbHelper {
         );
         //President Table
         await db.execute(
-          'CREATE TABLE $tablePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, vision TEXT, imageUrl)',
+          'CREATE TABLE $tablePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, vision TEXT, imageUrl TEXT)',
         );
         //Vice President Table
         await db.execute(
-          'CREATE TABLE $tableVicePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, vision TEXT, imageUrl)',
+          'CREATE TABLE $tableVicePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, mission TEXT, imageUrl TEXT)',
         );
         //Candidate Pair Table
         await db.execute(
@@ -109,61 +112,118 @@ class DbHelper {
   }
 
   //ADMIN
-  static Future<void> registerAdmin(String username, String password) async {
+  static Future<void> registerAdmin(AdminModel admin) async {
     final dbs = await db();
-    await dbs.insert(tableAdmin, {
-      'username': username,
-      'password': password,
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await dbs.insert(
+      tableAdmin,
+      admin.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  static Future<bool> loginAdmin(String username, String password) async {
+  static Future<AdminModel?> loginAdmin({
+    required String username,
+    required String password,
+  }) async {
     final dbs = await db();
-    final res = await dbs.query(
-      tableAdmin,
+    final List<Map<String, dynamic>> results = await dbs.query(
+      tableCitizen,
       where: 'username = ? AND password = ?',
       whereArgs: [username, password],
     );
-    return res.isNotEmpty;
+    if (results.isNotEmpty) {
+      return AdminModel.fromMap(results.first);
+    }
+    return null;
   }
 
   // CANDIDATES
   static Future<int> addPresident({
     required String name,
-    required String education,
-    required String experience,
-    required String achivement,
     required String vision,
     required String imageUrl,
   }) async {
     final dbs = await db();
     return await dbs.insert(tablePresident, {
       'name': name,
-      'education': education,
-      'experience': experience,
-      'achivement': achivement,
       'vision': vision,
       'imageUrl': imageUrl,
     });
   }
 
+  static Future<void> registerPresident(PresidentModel president) async {
+    final dbs = await db();
+    await dbs.insert(
+      tablePresident,
+      president.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  static Future<List<PresidentModel>> getAllPresidents() async {
+    final dbs = await db();
+    final List<Map<String, dynamic>> result = await dbs.query(tablePresident);
+    return result.map((e) => PresidentModel.fromMap(e)).toList();
+  }
+
+  static Future<void> updatePresidentVotes(int id, int newVotes) async {
+    final dbs = await db();
+    await dbs.update(
+      tablePresident,
+      {'votes': newVotes},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  static Future<void> deletePresident(int id) async {
+    final dbs = await db();
+    await dbs.delete(tablePresident, where: 'id = ?', whereArgs: [id]);
+  }
+
   static Future<int> addVicePresident({
     required String name,
-    required String education,
-    required String experience,
-    required String achivement,
-    required String vision,
+    required String mission,
     required String imageUrl,
   }) async {
     final dbs = await db();
     return await dbs.insert(tableVicePresident, {
       'name': name,
-      'education': education,
-      'experience': experience,
-      'achivement': achivement,
-      'vision': vision,
+      'mission': mission,
       'imageUrl': imageUrl,
     });
+  }
+
+  static Future<void> registerVicePresident(VicePresidentModel vice) async {
+    final dbs = await db();
+    await dbs.insert(
+      tableVicePresident,
+      vice.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  static Future<List<VicePresidentModel>> getAllVicePresidents() async {
+    final dbs = await db();
+    final List<Map<String, dynamic>> result = await dbs.query(
+      tableVicePresident,
+    );
+    return result.map((e) => VicePresidentModel.fromMap(e)).toList();
+  }
+
+  static Future<void> updateVicePresidentVotes(int id, int newVotes) async {
+    final dbs = await db();
+    await dbs.update(
+      tableVicePresident,
+      {'votes': newVotes},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  static Future<void> deleteVicePresident(int id) async {
+    final dbs = await db();
+    await dbs.delete(tableVicePresident, where: 'id = ?', whereArgs: [id]);
   }
 
   static Future<void> linkCandidatePair({
@@ -183,7 +243,7 @@ class DbHelper {
   static Future<List<Map<String, dynamic>>> getAllCandidatePairs() async {
     final dbs = await db();
     return await dbs.rawQuery(
-      'SELECT cp.id AS pairId, p.name AS presidentName, p.vision AS presidentVision, v.name AS viceName, v.vision AS viceVision, cp.votes AS votes, cp.description AS description, FROM $tableCandidatePair cp JOIN $tablePresident p ON cp.presidentId = p.id JOIN $tableVicePresident v ON cp.vicePresidentId = v.id',
+      'SELECT cp.id AS pairId, p.name AS presidentName, p.vision AS vision, v.name AS viceName, v.mission AS mission, cp.votes AS votes, cp.description AS description, FROM $tableCandidatePair cp JOIN $tablePresident p ON cp.presidentId = p.id JOIN $tableVicePresident v ON cp.vicePresidentId = v.id',
     );
   }
 

@@ -5,18 +5,18 @@ class VicePresidentModel {
   int? id;
   String name;
   String education;
-  String experience;
-  String achivement;
-  String vision;
-  String imageUrl;
+  String? experience;
+  String? achivement;
+  String mission;
+  String? imageUrl;
   VicePresidentModel({
     this.id,
     required this.name,
     required this.education,
-    required this.experience,
-    required this.achivement,
-    required this.vision,
-    required this.imageUrl,
+    this.experience,
+    this.achivement,
+    required this.mission,
+    this.imageUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,7 +26,7 @@ class VicePresidentModel {
       'education': education,
       'experience': experience,
       'achivement': achivement,
-      'vision': vision,
+      'mission': mission,
       'imageUrl': imageUrl,
     };
   }
@@ -36,10 +36,14 @@ class VicePresidentModel {
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] as String,
       education: map['education'] as String,
-      experience: map['experience'] as String,
-      achivement: map['achivement'] as String,
-      vision: map['vision'] as String,
-      imageUrl: map['imageUrl'] as String,
+      experience: map['experience'] != null
+          ? map['experience'] as String
+          : null,
+      achivement: map['achivement'] != null
+          ? map['achivement'] as String
+          : null,
+      mission: map['mission'] as String,
+      imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
     );
   }
 
@@ -50,6 +54,6 @@ class VicePresidentModel {
 
   @override
   String toString() {
-    return 'VicePresidentModel(id: $id, name: $name, education: $education, vision: $vision, imageUrl: $imageUrl)';
+    return 'VicePresidentModel(id: $id, name: $name, education: $education, mission: $mission, imageUrl: $imageUrl)';
   }
 }

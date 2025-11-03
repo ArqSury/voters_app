@@ -4,23 +4,20 @@ import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
 import 'package:voters_app/function/build_button.dart';
 import 'package:voters_app/function/build_textformfield.dart';
-import 'package:voters_app/model/citizen_model.dart';
-import 'package:voters_app/views/login_page.dart';
+import 'package:voters_app/model/admin_model.dart';
+import 'package:voters_app/views/_admin/admin_login_page.dart';
 
-class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+class AdminRegistrationPage extends StatefulWidget {
+  const AdminRegistrationPage({super.key});
 
   @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
+  State<AdminRegistrationPage> createState() => _AdminRegistrationPageState();
 }
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class _AdminRegistrationPageState extends State<AdminRegistrationPage> {
   final _formkey = GlobalKey<FormState>();
-  final TextEditingController nameC = TextEditingController();
-  final TextEditingController nikC = TextEditingController();
-  final TextEditingController provC = TextEditingController();
-  final TextEditingController passC = TextEditingController();
-  final TextEditingController noHpC = TextEditingController();
+  final TextEditingController userNameC = TextEditingController();
+  final TextEditingController passwordC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -54,14 +51,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
               color: Colors.white,
               onPressed: () {
                 if (_formkey.currentState!.validate()) {
-                  final CitizenModel dataCitizen = CitizenModel(
-                    name: nameC.text,
-                    province: provC.text,
-                    password: passC.text,
-                    phone: int.parse(noHpC.text),
-                    nik: int.parse(nikC.text),
+                  final AdminModel dataAdmin = AdminModel(
+                    username: userNameC.text,
+                    password: passwordC.text,
                   );
-                  DbHelper.registerCitizen(dataCitizen);
+                  DbHelper.registerAdmin(dataAdmin);
                   Fluttertoast.showToast(msg: 'Anda berhasil mendaftar');
                   Navigator.pop(context);
                 }
@@ -78,7 +72,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
+                      MaterialPageRoute(builder: (context) => AdminLoginPage()),
                     );
                   },
                   child: Text('Masuk', style: TextStyle(fontSize: 16)),
@@ -99,8 +93,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
         spacing: 16,
         children: [
           BuildTextformfield(
-            hint: 'Nama',
-            controller: nameC,
+            hint: 'Username',
+            controller: userNameC,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 Fluttertoast.showToast(msg: 'Nama wajib diisi!');
@@ -109,40 +103,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
             },
           ),
           BuildTextformfield(
-            hint: 'Nomor Induk Kependudukan (NIK)',
-            controller: nikC,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                Fluttertoast.showToast(msg: 'NIK wajib diisi!');
-              }
-              return null;
-            },
-            isNumber: true,
-          ),
-          BuildTextformfield(
-            hint: 'Provinsi',
-            controller: provC,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                Fluttertoast.showToast(msg: 'Provinsi wajib diisi!');
-              }
-              return null;
-            },
-          ),
-          BuildTextformfield(
-            hint: 'No. Hp /  Whatsapp',
-            controller: noHpC,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                Fluttertoast.showToast(msg: 'No. Hp wajib diisi!');
-              }
-              return null;
-            },
-            isNumber: true,
-          ),
-          BuildTextformfield(
             hint: 'Kata Sandi',
-            controller: passC,
+            controller: passwordC,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 Fluttertoast.showToast(msg: 'Kata sandi wajib diisi!');

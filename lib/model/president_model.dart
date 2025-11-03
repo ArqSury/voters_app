@@ -5,18 +5,18 @@ class PresidentModel {
   int? id;
   String name;
   String education;
-  String experience;
-  String achivement;
+  String? experience;
+  String? achivement;
   String vision;
-  String imageUrl;
+  String? imageUrl;
   PresidentModel({
     this.id,
     required this.name,
     required this.education,
-    required this.experience,
-    required this.achivement,
+    this.experience,
+    this.achivement,
     required this.vision,
-    required this.imageUrl,
+    this.imageUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -36,10 +36,14 @@ class PresidentModel {
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] as String,
       education: map['education'] as String,
-      experience: map['experience'] as String,
-      achivement: map['achivement'] as String,
+      experience: map['experience'] != null
+          ? map['experience'] as String
+          : null,
+      achivement: map['achivement'] != null
+          ? map['achivement'] as String
+          : null,
       vision: map['vision'] as String,
-      imageUrl: map['imageUrl'] as String,
+      imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
     );
   }
 
