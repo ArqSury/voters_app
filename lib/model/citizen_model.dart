@@ -23,7 +23,7 @@ class CitizenModel {
       'name': name,
       'province': province,
       'password': password,
-      'noHp': phone,
+      'phone': phone,
       'nik': nik,
     };
   }
@@ -34,7 +34,7 @@ class CitizenModel {
       name: map['name'] as String,
       province: map['province'] as String,
       password: map['password'] as String,
-      phone: map['noHp'] as int,
+      phone: map['phone'] as int,
       nik: map['nik'] as int,
     );
   }
@@ -43,4 +43,9 @@ class CitizenModel {
 
   factory CitizenModel.fromJson(String source) =>
       CitizenModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  String toString() {
+    return 'CitizenModel(id: $id, name: $name, province: $province, nik: $nik, phone: $phone)';
+  }
 }
