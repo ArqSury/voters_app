@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:voters_app/views/_admin/admin_login_page.dart';
 import 'package:voters_app/views/login_page.dart';
 
 class StartPage extends StatefulWidget {
@@ -27,34 +28,43 @@ class _StartPageState extends State<StartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFFF5DAA7), Color(0xFF957C62)],
-                      begin: AlignmentDirectional.topCenter,
-                      end: AlignmentDirectional.bottomCenter,
+    return GestureDetector(
+      onDoubleTap: () {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => AdminLoginPage()),
+          (route) => false,
+        );
+      },
+      child: SafeArea(
+        child: Scaffold(
+          body: Center(
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFF5DAA7), Color(0xFF957C62)],
+                        begin: AlignmentDirectional.topCenter,
+                        end: AlignmentDirectional.bottomCenter,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image(
+                          image: AssetImage(
+                            'assets/images/logo/logo_voterson_nobg2.png',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image(
-                        image: AssetImage(
-                          'assets/images/logo/logo_voterson_nobg2.png',
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
