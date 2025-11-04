@@ -31,7 +31,11 @@ class _CandidateScreenState extends State<CandidateScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(backgroundColor: AppColor.primary),
+        appBar: AppBar(
+          backgroundColor: AppColor.primary,
+          title: Text('Profil Calon'),
+          centerTitle: true,
+        ),
         body: Stack(
           alignment: AlignmentDirectional.bottomCenter,
           children: [buildBackground(), buildLayer()],
@@ -42,23 +46,32 @@ class _CandidateScreenState extends State<CandidateScreen> {
 
   Center buildLayer() {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            SizedBox(height: 10),
-            ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: candidatePairs.length,
-              itemBuilder: (context, index) {
-                final pair = candidatePairs[index];
-                final president = PresidentModel.fromMap(pair['president']);
-                final vicePresident = VicePresidentModel.fromMap(
-                  pair['vice_president'],
-                );
-                return buildCard(index, president, vicePresident);
-              },
-            ),
+            SizedBox(height: 16),
+            if (candidatePairs.isEmpty)
+              const Center(
+                child: Text(
+                  'Belum ada pasangan calon yang terdaftar.',
+                  style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                ),
+              )
+            else
+              ListView.builder(
+                itemCount: candidatePairs.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final pair = candidatePairs[index];
+                  final president = PresidentModel.fromMap(pair['president']);
+                  final vicePresident = VicePresidentModel.fromMap(
+                    pair['vice_president'],
+                  );
+                  return buildCard(index, president, vicePresident);
+                },
+              ),
           ],
         ),
       ),
@@ -106,9 +119,14 @@ class _CandidateScreenState extends State<CandidateScreen> {
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundImage: NetworkImage(vicePresident.imageUrl.toString()),
+          backgroundImage:
+              (vicePresident.imageUrl != null &&
+                  vicePresident.imageUrl!.isNotEmpty)
+              ? NetworkImage(vicePresident.imageUrl!)
+              : AssetImage('assets/images/logo/profil_foto.jpg'),
         ),
         SizedBox(height: 8),
+        Text('Wakil Presiden', style: TextStyle(fontWeight: FontWeight.bold)),
         Text('Nama', style: const TextStyle(fontWeight: FontWeight.bold)),
         Text(vicePresident.name, style: const TextStyle(fontSize: 15)),
         const SizedBox(height: 8),
@@ -117,11 +135,11 @@ class _CandidateScreenState extends State<CandidateScreen> {
           textAlign: TextAlign.center,
         ),
         Text(
-          'Pengalaman: ${vicePresident.experience}',
+          'Pengalaman: ${vicePresident.experience ?? "-"}',
           textAlign: TextAlign.center,
         ),
         Text(
-          'Pencapaian: ${vicePresident.achivement}',
+          'Pencapaian: ${vicePresident.achivement ?? "-"}',
           textAlign: TextAlign.center,
         ),
       ],
@@ -133,19 +151,23 @@ class _CandidateScreenState extends State<CandidateScreen> {
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundImage: NetworkImage(president.imageUrl.toString()),
+          backgroundImage:
+              (president.imageUrl != null && president.imageUrl!.isNotEmpty)
+              ? NetworkImage(president.imageUrl!)
+              : AssetImage('assets/images/logo/profil_foto.jpg'),
         ),
         const SizedBox(height: 8),
+        Text('Presiden', style: TextStyle(fontWeight: FontWeight.bold)),
         Text('Nama', style: const TextStyle(fontWeight: FontWeight.bold)),
         Text(president.name, style: const TextStyle(fontSize: 15)),
         const SizedBox(height: 8),
         Text('Edukasi: ${president.education}', textAlign: TextAlign.center),
         Text(
-          'Pengalaman: ${president.experience}',
+          'Pengalaman: ${president.experience ?? "-"}',
           textAlign: TextAlign.center,
         ),
         Text(
-          'Pencapaian: ${president.achivement}',
+          'Pencapaian: ${president.achivement ?? "-"}',
           textAlign: TextAlign.center,
         ),
       ],
