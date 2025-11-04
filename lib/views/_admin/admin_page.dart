@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
 import 'package:voters_app/function/build_button.dart';
@@ -22,72 +23,12 @@ class _AdminPageState extends State<AdminPage> {
   final TextEditingController missionCon = TextEditingController();
   final TextEditingController presEduCon = TextEditingController();
   final TextEditingController viceEduCon = TextEditingController();
-
-  List<Map<String, dynamic>> _candidatesPairs = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCandidates();
-  }
-
-  Future<void> _loadCandidates() async {
-    final presidents = await DbHelper.getAllPresidents();
-    final vps = await DbHelper.getAllVicePresidents();
-
-    // Pair them logically by ID (you can customize pairing logic later)
-    List<Map<String, dynamic>> combined = [];
-    for (var i = 0; i < presidents.length; i++) {
-      combined.add({
-        'president': presidents[i],
-        'vicePresident': i < vps.length ? vps[i] : null,
-      });
-    }
-    setState(() {
-      _candidatesPairs = combined;
-    });
-  }
-
-  Future<void> _registerCandidatePair() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final president = PresidentModel(
-      name: presidentNameCon.text,
-      vision: visionCon.text,
-      education: presEduCon.text,
-    );
-
-    final vicePresident = VicePresidentModel(
-      name: vicePresidentNameCon.text,
-      mission: missionCon.text,
-      education: viceEduCon.text,
-    );
-
-    await DbHelper.registerPresident(president);
-    await DbHelper.registerVicePresident(vicePresident);
-
-    presidentNameCon.clear();
-    vicePresidentNameCon.clear();
-    visionCon.clear();
-    missionCon.clear();
-
-    await _loadCandidates();
-  }
-
-  Future<void> _deleteCandidate(int index) async {
-    final pair = _candidatesPairs[index];
-    final president = pair['president'] as PresidentModel?;
-    final vice = pair['vicePresident'] as VicePresidentModel?;
-
-    if (president?.id != null) {
-      await DbHelper.deletePresident(president!.id!);
-    }
-    if (vice?.id != null) {
-      await DbHelper.deleteVicePresident(vice!.id!);
-    }
-
-    await _loadCandidates();
-  }
+  final TextEditingController presExpCon = TextEditingController();
+  final TextEditingController viceExpCon = TextEditingController();
+  final TextEditingController presAchiveCon = TextEditingController();
+  final TextEditingController viceAchiveCon = TextEditingController();
+  final TextEditingController presImageCon = TextEditingController();
+  final TextEditingController viceImageCon = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -132,77 +73,45 @@ class _AdminPageState extends State<AdminPage> {
                     fontStyle: FontStyle.italic,
                   ),
                 ),
-                BuildTextformfield(
-                  hint: 'Nama Calon Presiden',
-                  controller: presidentNameCon,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Wajib Diisi!';
-                    }
-                    return null;
-                  },
-                ),
-                BuildTextformfield(
-                  hint: 'Edukasi Calon Presiden',
-                  controller: presEduCon,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Wajib Diisi!';
-                    }
-                    return null;
-                  },
-                ),
-                BuildTextformfield(
-                  hint: 'Nama Calon Wakil Presiden',
-                  controller: vicePresidentNameCon,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Wajib Diisi!';
-                    }
-                    return null;
-                  },
-                ),
-                BuildTextformfield(
-                  hint: 'Edukasi Calon Wakil Presiden',
-                  controller: viceEduCon,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Wajib Diisi!';
-                    }
-                    return null;
-                  },
-                ),
-                BuildTextformfield(
-                  hint: 'Visi',
-                  controller: visionCon,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Wajib Diisi!';
-                    }
-                    return null;
-                  },
-                ),
-                BuildTextformfield(
-                  hint: 'Misi',
-                  controller: missionCon,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Wajib Diisi!';
-                    }
-                    return null;
-                  },
-                ),
+                buildPresidentInput(),
+                buildVPInput(),
                 BuildButton(
-                  text: 'Daftarkan Kandidat',
-                  width: 180,
-                  height: 80,
-                  onPressed: _registerCandidatePair,
+                  text: 'Simpan Pasangan',
+                  width: 200,
+                  height: 200,
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final pId = PresidentModel(
+                        name: presidentNameCon.text,
+                        education: presEduCon.text,
+                        vision: visionCon.text,
+                        mission: missionCon.text,
+                        experience: presExpCon.text,
+                        achivement: presAchiveCon.text,
+                        imageUrl: presImageCon.text,
+                      );
+                      final vId = VicePresidentModel(
+                        name: vicePresidentNameCon.text,
+                        education: viceEduCon.text,
+                        vision: visionCon.text,
+                        mission: missionCon.text,
+                        experience: viceExpCon.text,
+                        achivement: viceAchiveCon.text,
+                        imageUrl: viceImageCon.text,
+                      );
+                      await DbHelper.addCandidatePair(
+                        president: pId,
+                        vicePresident: vId,
+                      );
+                      Fluttertoast.showToast(
+                        msg: 'Pasangan berhasil didaftarkan',
+                      );
+                      setState(() {
+                        _formKey.currentState!.reset();
+                      });
+                    }
+                  },
                 ),
-                Divider(color: Colors.black, height: 12),
-                Text('Daftar Pasangan Kandidat Terdaftar'),
-                _candidatesPairs.isEmpty
-                    ? Text('Belum Ada Pasangan')
-                    : buildListView(),
               ],
             ),
           ),
@@ -211,35 +120,115 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
-  ListView buildListView() {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: _candidatesPairs.length,
-      itemBuilder: (context, index) {
-        final president =
-            _candidatesPairs[index]['president'] as PresidentModel?;
-        final vice =
-            _candidatesPairs[index]['vicePresident'] as VicePresidentModel?;
-        return Card(
-          color: AppColor.background,
-          margin: const EdgeInsets.all(12),
-          child: ListTile(
-            leading: Icon(Icons.person),
-            title: Text(
-              '${president?.name ?? ''} & ${vice?.name ?? ''}',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              'Visi : ${president?.vision ?? ''}\n'
-              'Misi : ${vice?.mission ?? ''}',
-            ),
-            trailing: IconButton(
-              onPressed: () => _deleteCandidate(index),
-              icon: Icon(Icons.delete, color: Colors.red),
-            ),
+  Container buildPresidentInput() {
+    return Container(
+      margin: EdgeInsets.all(8),
+      padding: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Calon Presiden'),
+          BuildTextformfield(
+            hint: 'Nama',
+            controller: presidentNameCon,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Wajib Diisi';
+              }
+              return null;
+            },
           ),
-        );
-      },
+          BuildTextformfield(
+            hint: 'Edukasi',
+            controller: presEduCon,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Wajib Diisi';
+              }
+              return null;
+            },
+          ),
+          BuildTextformfield(hint: 'Pengalaman', controller: presExpCon),
+          BuildTextformfield(hint: 'Pencapaian', controller: presAchiveCon),
+          BuildTextformfield(hint: 'Foto profil', controller: presImageCon),
+          BuildTextformfield(
+            hint: 'Visi',
+            controller: visionCon,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Wajib Diisi';
+              }
+              return null;
+            },
+          ),
+          BuildTextformfield(
+            hint: 'Misi',
+            controller: missionCon,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Wajib Diisi';
+              }
+              return null;
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container buildVPInput() {
+    return Container(
+      margin: EdgeInsets.all(8),
+      padding: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Calon Wakil Presiden'),
+          BuildTextformfield(
+            hint: 'Nama',
+            controller: vicePresidentNameCon,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Wajib Diisi';
+              }
+              return null;
+            },
+          ),
+          BuildTextformfield(
+            hint: 'Edukasi',
+            controller: viceEduCon,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Wajib Diisi';
+              }
+              return null;
+            },
+          ),
+          BuildTextformfield(hint: 'Pengalaman', controller: viceExpCon),
+          BuildTextformfield(hint: 'Pencapaian', controller: viceAchiveCon),
+          BuildTextformfield(hint: 'Foto profil', controller: viceImageCon),
+          BuildTextformfield(
+            hint: 'Visi',
+            controller: visionCon,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Wajib Diisi';
+              }
+              return null;
+            },
+          ),
+          BuildTextformfield(
+            hint: 'Misi',
+            controller: missionCon,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Wajib Diisi';
+              }
+              return null;
+            },
+          ),
+        ],
+      ),
     );
   }
 

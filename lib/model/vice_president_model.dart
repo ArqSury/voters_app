@@ -7,6 +7,7 @@ class VicePresidentModel {
   String education;
   String? experience;
   String? achivement;
+  String vision;
   String mission;
   String? imageUrl;
   VicePresidentModel({
@@ -15,6 +16,7 @@ class VicePresidentModel {
     required this.education,
     this.experience,
     this.achivement,
+    required this.vision,
     required this.mission,
     this.imageUrl,
   });
@@ -26,6 +28,7 @@ class VicePresidentModel {
       'education': education,
       'experience': experience,
       'achivement': achivement,
+      'vision': vision,
       'mission': mission,
       'imageUrl': imageUrl,
     };
@@ -42,6 +45,7 @@ class VicePresidentModel {
       achivement: map['achivement'] != null
           ? map['achivement'] as String
           : null,
+      vision: map['vision'] as String,
       mission: map['mission'] as String,
       imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
     );

@@ -34,34 +34,6 @@ class _CandidateScreenState extends State<CandidateScreen> {
             ),
             Divider(color: Colors.black, indent: 20, endIndent: 20),
             SizedBox(height: 10),
-            DefaultTabController(
-              length: 3,
-              child: Column(
-                children: [
-                  const TabBar(
-                    tabs: [
-                      Tab(text: 'Pasangan 1'),
-                      Tab(text: 'Pasangan 2'),
-                      Tab(text: 'Pasangan 3'),
-                    ],
-                  ),
-                  Container(
-                    height: 500,
-                    width: double.infinity,
-                    margin: const EdgeInsets.all(20),
-                    padding: const EdgeInsets.all(8),
-                    decoration: decorationContainer(),
-                    child: TabBarView(
-                      children: [
-                        Center(child: Text('Pasangan 1')),
-                        Center(child: Text('Pasangan 2')),
-                        Center(child: Text('Pasangan 3')),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),

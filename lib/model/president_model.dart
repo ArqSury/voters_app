@@ -3,30 +3,36 @@ import 'dart:convert';
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class PresidentModel {
   int? id;
+  int? vicePresidentId;
   String name;
   String education;
   String? experience;
   String? achivement;
   String vision;
+  String mission;
   String? imageUrl;
   PresidentModel({
     this.id,
+    this.vicePresidentId,
     required this.name,
     required this.education,
     this.experience,
     this.achivement,
     required this.vision,
+    required this.mission,
     this.imageUrl,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'vicePresidentId': vicePresidentId,
       'name': name,
       'education': education,
       'experience': experience,
       'achivement': achivement,
       'vision': vision,
+      'mission': mission,
       'imageUrl': imageUrl,
     };
   }
@@ -34,6 +40,9 @@ class PresidentModel {
   factory PresidentModel.fromMap(Map<String, dynamic> map) {
     return PresidentModel(
       id: map['id'] != null ? map['id'] as int : null,
+      vicePresidentId: map['vicePresidentId'] != null
+          ? map['vicePresidentId'] as int
+          : null,
       name: map['name'] as String,
       education: map['education'] as String,
       experience: map['experience'] != null
@@ -43,6 +52,7 @@ class PresidentModel {
           ? map['achivement'] as String
           : null,
       vision: map['vision'] as String,
+      mission: map['mission'] as String,
       imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
     );
   }

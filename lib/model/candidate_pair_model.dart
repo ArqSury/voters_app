@@ -5,13 +5,11 @@ class CandidatePairModel {
   int? id;
   int presidentId;
   int vicePresidentId;
-  String description;
   int votes;
   CandidatePairModel({
     this.id,
     required this.presidentId,
     required this.vicePresidentId,
-    required this.description,
     this.votes = 0,
   });
 
@@ -20,7 +18,6 @@ class CandidatePairModel {
       'id': id,
       'presidentId': presidentId,
       'vicePresidentId': vicePresidentId,
-      'description': description,
       'votes': votes,
     };
   }
@@ -30,8 +27,7 @@ class CandidatePairModel {
       id: map['id'] != null ? map['id'] as int : null,
       presidentId: map['presidentId'] as int,
       vicePresidentId: map['vicePresidentId'] as int,
-      description: map['description'] as String,
-      votes: map['votes'] ?? 0,
+      votes: map['votes'] as int,
     );
   }
 
@@ -39,9 +35,4 @@ class CandidatePairModel {
 
   factory CandidatePairModel.fromJson(String source) =>
       CandidatePairModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'CandidatePairModel(id: $id, presidentId: $presidentId, vicePresidentId: $vicePresidentId, votes: $votes)';
-  }
 }

@@ -138,18 +138,6 @@ class DbHelper {
   }
 
   // CANDIDATES
-  static Future<int> addPresident({
-    required String name,
-    required String vision,
-    required String imageUrl,
-  }) async {
-    final dbs = await db();
-    return await dbs.insert(tablePresident, {
-      'name': name,
-      'vision': vision,
-      'imageUrl': imageUrl,
-    });
-  }
 
   static Future<void> registerPresident(PresidentModel president) async {
     final dbs = await db();
@@ -166,32 +154,9 @@ class DbHelper {
     return result.map((e) => PresidentModel.fromMap(e)).toList();
   }
 
-  static Future<void> updatePresidentVotes(int id, int newVotes) async {
-    final dbs = await db();
-    await dbs.update(
-      tablePresident,
-      {'votes': newVotes},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
   static Future<void> deletePresident(int id) async {
     final dbs = await db();
     await dbs.delete(tablePresident, where: 'id = ?', whereArgs: [id]);
-  }
-
-  static Future<int> addVicePresident({
-    required String name,
-    required String mission,
-    required String imageUrl,
-  }) async {
-    final dbs = await db();
-    return await dbs.insert(tableVicePresident, {
-      'name': name,
-      'mission': mission,
-      'imageUrl': imageUrl,
-    });
   }
 
   static Future<void> registerVicePresident(VicePresidentModel vice) async {
@@ -211,40 +176,30 @@ class DbHelper {
     return result.map((e) => VicePresidentModel.fromMap(e)).toList();
   }
 
-  static Future<void> updateVicePresidentVotes(int id, int newVotes) async {
-    final dbs = await db();
-    await dbs.update(
-      tableVicePresident,
-      {'votes': newVotes},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
   static Future<void> deleteVicePresident(int id) async {
     final dbs = await db();
     await dbs.delete(tableVicePresident, where: 'id = ?', whereArgs: [id]);
   }
 
-  static Future<void> linkCandidatePair({
-    required int presidentId,
-    required int vicePresidentId,
-    required String description,
+  static Future<void> addCandidatePair({
+    required PresidentModel president,
+    required VicePresidentModel vicePresident,
   }) async {
     final dbs = await db();
+    final vpId = await dbs.insert(tableVicePresident, vicePresident.toMap());
+    final presId = await dbs.insert(tablePresident, president.toMap());
     await dbs.insert(tableCandidatePair, {
-      'presidentId': presidentId,
-      'vicePresidentId': vicePresidentId,
-      'description': description,
-      'votes': 0,
+      'presidentId': presId,
+      'vicePresidentId': vpId,
     });
   }
 
-  static Future<List<Map<String, dynamic>>> getAllCandidatePairs() async {
+  static Future<List<Map<String, dynamic>>> getAllPairs() async {
     final dbs = await db();
-    return await dbs.rawQuery(
-      'SELECT cp.id AS pairId, p.name AS presidentName, p.vision AS vision, v.name AS viceName, v.mission AS mission, cp.votes AS votes, cp.description AS description, FROM $tableCandidatePair cp JOIN $tablePresident p ON cp.presidentId = p.id JOIN $tableVicePresident v ON cp.vicePresidentId = v.id',
+    final result = await dbs.rawQuery(
+      'SELECT p.id as presidentId, p.name as presidentName, p.vision as pVision, p.mission as pMission, p.education as pEducation, p.experience as pExperience, p.achivement as pAchivement, p.imageUrl as presidentImage, v.id as vpId, v.name as vpName, v.vision as vpVision, v.mission as vpMission, v.education as vpEducation, v.experience as vpExperience, v.achivement as vpAchivement, v.imageUrl as vpImage, FROM $tableCandidatePair c, INNER JOIN $tablePresident p ON p.id = c.presidentId, INNER JOIN $tableVicePresident v ON v.id = c.vicePresidentId',
     );
+    return result;
   }
 
   // VOTING
