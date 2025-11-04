@@ -196,9 +196,26 @@ class DbHelper {
 
   static Future<List<Map<String, dynamic>>> getAllPairs() async {
     final dbs = await db();
-    final result = await dbs.rawQuery(
-      'SELECT p.id as presidentId, p.name as presidentName, p.vision as pVision, p.mission as pMission, p.education as pEducation, p.experience as pExperience, p.achivement as pAchivement, p.imageUrl as presidentImage, v.id as vpId, v.name as vpName, v.vision as vpVision, v.mission as vpMission, v.education as vpEducation, v.experience as vpExperience, v.achivement as vpAchivement, v.imageUrl as vpImage, FROM $tableCandidatePair c, INNER JOIN $tablePresident p ON p.id = c.presidentId, INNER JOIN $tableVicePresident v ON v.id = c.vicePresidentId',
-    );
+    final result = await dbs.rawQuery('''
+    SELECT 
+      p.id AS presidentId,
+      p.name AS presidentName,
+      p.education AS pEducation,
+      p.experience AS pExperience,
+      p.achivement AS pAchivement,
+      p.vision AS pVision,
+      p.imageUrl AS pImage,
+      v.id AS vicePresidentId,
+      v.name AS vicePresidentName,
+      v.education AS vEducation,
+      v.experience AS vExperience,
+      v.achivement AS vAchivement,
+      v.mission AS vMission,
+      v.imageUrl AS vImage
+    FROM $tableCandidatePair cp
+    INNER JOIN $tablePresident p ON cp.presidentId = p.id
+    INNER JOIN $tableVicePresident v ON cp.vicePresidentId = v.id
+  ''');
     return result;
   }
 
