@@ -128,9 +128,20 @@ class _AdminPageState extends State<AdminPage> {
                       Fluttertoast.showToast(
                         msg: 'Pasangan berhasil didaftarkan',
                       );
-                      setState(() {
-                        _formKey.currentState!.reset();
-                      });
+                      presidentNameCon.clear();
+                      vicePresidentNameCon.clear();
+                      presEduCon.clear();
+                      viceEduCon.clear();
+                      presExpCon.clear();
+                      viceExpCon.clear();
+                      presAchiveCon.clear();
+                      viceAchiveCon.clear();
+                      presImageCon.clear();
+                      viceImageCon.clear();
+                      visionCon.clear();
+                      missionCon.clear();
+
+                      await loadCandidates();
                     }
                   },
                 ),
@@ -154,52 +165,62 @@ class _AdminPageState extends State<AdminPage> {
 
   ListView buildListCandidates() {
     return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       itemCount: candidatePairs.length,
       itemBuilder: (context, index) {
         final pair = candidatePairs[index];
-        final pres = pair['president'];
-        final vice = pair['vice_president'];
-        return buildCard(pres, vice, context, pair);
+        final president = PresidentModel.fromMap(pair['president']);
+        final vicePresident = VicePresidentModel.fromMap(
+          pair['vice_president'],
+        );
+        return buildCard(pair['id'], president, vicePresident);
       },
     );
   }
 
-  Card buildCard(pres, vice, BuildContext context, Map<String, dynamic> pair) {
+  Card buildCard(
+    int pairId,
+    PresidentModel president,
+    VicePresidentModel vicePresident,
+  ) {
     return Card(
+      elevation: 6,
       margin: const EdgeInsets.all(12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: ListTile(
-          leading: Icon(Icons.person),
-          title: Text("${pres['name']} & ${vice['name']}"),
-          subtitle: Text("Visi: ${pres['vision']}"),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () async {
-              final confirm = await showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("Delete Candidate Pair"),
-                  content: const Text(
-                    "Are you sure you want to delete this candidate pair?",
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Pasangan Calon ${candidatePairs[pairId]}',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            SizedBox(height: 8),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text(
+                '${president.name} & ${vicePresident.name}',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(president.vision),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      await deleteCandidate(pairId);
+                      Fluttertoast.showToast(msg: 'Pasangan dihapus');
+                    },
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text("Cancel"),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text("Delete"),
-                    ),
-                  ],
-                ),
-              );
-              if (confirm == true) {
-                await deleteCandidate(pair['pairId']);
-              }
-            },
-          ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

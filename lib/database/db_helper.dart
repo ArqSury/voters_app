@@ -19,30 +19,59 @@ class DbHelper {
     return openDatabase(
       join(dbPath, 'voting.db'),
       onCreate: (db, version) async {
+        await db.execute('PRAGMA foreign_keys = ON');
         //Citizen Table
-        await db.execute(
-          'CREATE TABLE $tableCitizen(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, province TEXT, password TEXT, nik int, phone int)',
-        );
+        await db.execute('''CREATE TABLE $tableCitizen(
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          name TEXT, 
+          province TEXT, 
+          password TEXT, 
+          nik int, 
+          phone int)''');
         //Admin Table
-        await db.execute(
-          'CREATE TABLE $tableAdmin (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)',
-        );
+        await db.execute('''CREATE TABLE $tableAdmin (
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          username TEXT UNIQUE, 
+          password TEXT)''');
         //President Table
-        await db.execute(
-          'CREATE TABLE $tablePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, vision TEXT, mission TEXT, imageUrl TEXT, vicePresidentId int)',
-        );
+        await db.execute('''CREATE TABLE $tablePresident (
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          name TEXT, 
+          education TEXT, 
+          experience TEXT, 
+          achivement TEXT, 
+          vision TEXT, 
+          mission TEXT, 
+          imageUrl TEXT, 
+          vicePresidentId int)''');
         //Vice President Table
-        await db.execute(
-          'CREATE TABLE $tableVicePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, vision TEXT, mission TEXT, imageUrl TEXT)',
-        );
+        await db.execute('''CREATE TABLE $tableVicePresident (
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          name TEXT, 
+          education TEXT, 
+          experience TEXT, 
+          achivement TEXT, 
+          vision TEXT, 
+          mission TEXT, 
+          imageUrl TEXT)''');
         //Candidate Pair Table
         await db.execute(
-          'CREATE TABLE $tableCandidatePair (id INTEGER PRIMARY KEY AUTOINCREMENT, presidentId int, vicePresidentId int, description TEXT, votes INTEGER DEFAULT 0, FOREIGN KEY (presidentId) REFERENCES $tablePresident (id), FOREIGN KEY (vicePresidentId) REFERENCES $tableVicePresident (id))',
+          '''CREATE TABLE $tableCandidatePair (
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          presidentId int, 
+          vicePresidentId int, 
+          description TEXT,
+          votes INTEGER DEFAULT 0, 
+          FOREIGN KEY (presidentId) REFERENCES $tablePresident (id), 
+          FOREIGN KEY (vicePresidentId) REFERENCES $tableVicePresident (id))''',
         );
         //Vote Table
-        await db.execute(
-          'CREATE TABLE $tableVote (id INTEGER PRIMARY KEY AUTOINCREMENT, citizenId int, pairId int, FOREIGN KEY (pairId) REFERENCES $tableCandidatePair (id), FOREIGN KEY (citizenId) REFERENCES $tableCitizen (id))',
-        );
+        await db.execute('''CREATE TABLE $tableVote (
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          citizenId int, 
+          pairId int, 
+          FOREIGN KEY (pairId) REFERENCES $tableCandidatePair (id), 
+          FOREIGN KEY (citizenId) REFERENCES $tableCitizen (id))''');
       },
 
       version: 1,
@@ -186,12 +215,22 @@ class DbHelper {
     required VicePresidentModel vicePresident,
   }) async {
     final dbs = await db();
-    final vpId = await dbs.insert(tableVicePresident, vicePresident.toMap());
-    final presId = await dbs.insert(tablePresident, president.toMap());
+    final vpId = await dbs.insert(
+      tableVicePresident,
+      vicePresident.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    president.vicePresidentId = vpId;
+    final presId = await dbs.insert(
+      tablePresident,
+      president.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
     await dbs.insert(tableCandidatePair, {
       'presidentId': presId,
       'vicePresidentId': vpId,
-    });
+      'votes': 0,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<List<Map<String, dynamic>>> getAllPairs() async {
@@ -216,68 +255,108 @@ class DbHelper {
     INNER JOIN $tablePresident p ON cp.presidentId = p.id
     INNER JOIN $tableVicePresident v ON cp.vicePresidentId = v.id
   ''');
-    return result;
+    return result.map((row) {
+      return {
+        'pairId': row['pairId'],
+        'president': PresidentModel.fromMap({
+          'id': row['presidentId'],
+          'name': row['presidentName'],
+          'education': row['pEducation'],
+          'experience': row['pExperience'],
+          'achivement': row['pAchivement'],
+          'vision': row['pVision'],
+          'mission': row['pMission'],
+          'imageUrl': row['pImage'],
+          'vicePresidentId': row['vicePresidentId'],
+        }).toMap(),
+        'vice_president': {
+          'id': row['vicePresidentId'],
+          'name': row['vicePresidentName'],
+          'education': row['vEducation'],
+          'experience': row['vExperience'],
+          'achivement': row['vAchivement'],
+          'mission': row['vMission'],
+          'imageUrl': row['vImage'],
+        },
+      };
+    }).toList();
   }
 
   static Future<void> deleteCandidatePair(int pairId) async {
     final dbs = await db();
 
-    // Get the linked president and vice president IDs first
-    final List<Map<String, dynamic>> pair = await dbs.query(
-      tableCandidatePair,
-      where: 'id = ?',
-      whereArgs: [pairId],
-    );
-
-    if (pair.isNotEmpty) {
-      final presId = pair.first['presidentId'];
-      final viceId = pair.first['vicePresidentId'];
-
-      // Delete the pair link
-      await dbs.delete(
+    await dbs.transaction((txn) async {
+      // Get linked president and vice president IDs
+      final List<Map<String, dynamic>> pair = await txn.query(
         tableCandidatePair,
         where: 'id = ?',
         whereArgs: [pairId],
       );
 
-      // Delete linked president and vice president
-      await dbs.delete(tablePresident, where: 'id = ?', whereArgs: [presId]);
+      if (pair.isNotEmpty) {
+        final int presId = pair.first['presidentId'] as int;
+        final int viceId = pair.first['vicePresidentId'] as int;
 
-      await dbs.delete(
-        tableVicePresident,
-        where: 'id = ?',
-        whereArgs: [viceId],
-      );
-    }
+        // Delete votes related to this pair first (if exist)
+        await txn.delete(tableVote, where: 'pairId = ?', whereArgs: [pairId]);
+
+        // Delete candidate pair
+        await txn.delete(
+          tableCandidatePair,
+          where: 'id = ?',
+          whereArgs: [pairId],
+        );
+
+        // Delete linked president and vice president
+        await txn.delete(tablePresident, where: 'id = ?', whereArgs: [presId]);
+
+        await txn.delete(
+          tableVicePresident,
+          where: 'id = ?',
+          whereArgs: [viceId],
+        );
+      }
+    });
   }
 
   // VOTING
   static Future<bool> hasCitizenVoted(int citizenId) async {
     final dbs = await db();
-    final res = await dbs.query(
-      tableVote,
-      where: 'citizenId = ?',
-      whereArgs: [citizenId],
+    final result = await dbs.rawQuery(
+      'SELECT COUNT(*) as count FROM $tableVote WHERE citizenId = ? LIMIT 1',
+      [citizenId],
     );
-    return res.isNotEmpty;
+    final count = Sqflite.firstIntValue(result) ?? 0;
+    return count > 0;
   }
 
-  static Future<void> castVote(int citizenId, int pairId) async {
+  static Future<bool> castVote(int citizenId, int pairId) async {
     final dbs = await db();
     final alreadyVoted = await hasCitizenVoted(citizenId);
-    if (!alreadyVoted) {
-      await dbs.insert(tableVote, {'citizenId': citizenId, 'pairId': pairId});
-      await dbs.rawUpdate(
+    if (alreadyVoted) return false;
+
+    await dbs.transaction((txn) async {
+      await txn.insert(tableVote, {'citizenId': citizenId, 'pairId': pairId});
+
+      await txn.rawUpdate(
         'UPDATE $tableCandidatePair SET votes = votes + 1 WHERE id = ?',
         [pairId],
       );
-    }
+    });
+
+    return true;
   }
 
   static Future<List<Map<String, dynamic>>> getVotingResults() async {
     final dbs = await db();
-    return await dbs.rawQuery(
-      'SELECT cp.id AS pairId, p.name AS presidentName, v.name AS viceName, cp.votes AS votes, FROM $tableCandidatePair cp JOIN $tablePresident p ON cp.presidentId = p.Id JOIN $tableVicePresident v ON cp.vicePresidentId = v.Id ORDER BY cp.votes DESC',
-    );
+    return await dbs.rawQuery('''SELECT 
+      cp.id AS pairId, 
+      p.name AS presidentName, 
+      v.name AS viceName, 
+      cp.votes AS votes 
+      FROM $tableCandidatePair cp 
+      JOIN $tablePresident p ON cp.presidentId = p.Id 
+      JOIN $tableVicePresident v ON cp.vicePresidentId = v.Id 
+      ORDER BY cp.votes DESC''');
   }
 }
