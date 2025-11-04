@@ -219,6 +219,38 @@ class DbHelper {
     return result;
   }
 
+  static Future<void> deleteCandidatePair(int pairId) async {
+    final dbs = await db();
+
+    // Get the linked president and vice president IDs first
+    final List<Map<String, dynamic>> pair = await dbs.query(
+      tableCandidatePair,
+      where: 'id = ?',
+      whereArgs: [pairId],
+    );
+
+    if (pair.isNotEmpty) {
+      final presId = pair.first['presidentId'];
+      final viceId = pair.first['vicePresidentId'];
+
+      // Delete the pair link
+      await dbs.delete(
+        tableCandidatePair,
+        where: 'id = ?',
+        whereArgs: [pairId],
+      );
+
+      // Delete linked president and vice president
+      await dbs.delete(tablePresident, where: 'id = ?', whereArgs: [presId]);
+
+      await dbs.delete(
+        tableVicePresident,
+        where: 'id = ?',
+        whereArgs: [viceId],
+      );
+    }
+  }
+
   // VOTING
   static Future<bool> hasCitizenVoted(int citizenId) async {
     final dbs = await db();
