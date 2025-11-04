@@ -30,6 +30,26 @@ class _AdminPageState extends State<AdminPage> {
   final TextEditingController presImageCon = TextEditingController();
   final TextEditingController viceImageCon = TextEditingController();
 
+  List<Map<String, dynamic>> candidatePairs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadCandidates();
+  }
+
+  Future<void> loadCandidates() async {
+    final data = await DbHelper.getAllPairs();
+    setState(() {
+      candidatePairs = data;
+    });
+  }
+
+  Future<void> deleteCandidate(int pairId) async {
+    await DbHelper.deleteCandidatePair(pairId);
+    await loadCandidates();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -112,8 +132,71 @@ class _AdminPageState extends State<AdminPage> {
                     }
                   },
                 ),
+                Divider(height: 20),
+                Text('Daftar Pasangan Calon Presiden dan Wakil Presiden'),
+                candidatePairs.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [Text('Belum Ada Pasangan yang Terdaftar')],
+                        ),
+                      )
+                    : buildListCandidates(),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  ListView buildListCandidates() {
+    return ListView.builder(
+      itemCount: candidatePairs.length,
+      itemBuilder: (context, index) {
+        final pair = candidatePairs[index];
+        final pres = pair['president'];
+        final vice = pair['vice_president'];
+        return buildCard(pres, vice, context, pair);
+      },
+    );
+  }
+
+  Card buildCard(pres, vice, BuildContext context, Map<String, dynamic> pair) {
+    return Card(
+      margin: const EdgeInsets.all(12),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: ListTile(
+          leading: Icon(Icons.person),
+          title: Text("${pres['name']} & ${vice['name']}"),
+          subtitle: Text("Visi: ${pres['vision']}"),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: () async {
+              final confirm = await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Delete Candidate Pair"),
+                  content: const Text(
+                    "Are you sure you want to delete this candidate pair?",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text("Cancel"),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text("Delete"),
+                    ),
+                  ],
+                ),
+              );
+              if (confirm == true) {
+                await deleteCandidate(pair['pairId']);
+              }
+            },
           ),
         ),
       ),
