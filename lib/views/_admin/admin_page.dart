@@ -96,9 +96,11 @@ class _AdminPageState extends State<AdminPage> {
                 buildPresidentInput(),
                 buildVPInput(),
                 BuildButton(
-                  text: 'Simpan Pasangan',
-                  width: 200,
-                  height: 200,
+                  text: 'Simpan',
+                  width: 100,
+                  height: 80,
+                  backgroundColor: AppColor.button,
+                  color: Colors.black,
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final pId = PresidentModel(

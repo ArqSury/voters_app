@@ -104,7 +104,10 @@ class _CandidateScreenState extends State<CandidateScreen> {
   Column buildVicePresidentProfile(VicePresidentModel vicePresident) {
     return Column(
       children: [
-        CircleAvatar(radius: 40),
+        CircleAvatar(
+          radius: 40,
+          backgroundImage: NetworkImage(vicePresident.imageUrl.toString()),
+        ),
         SizedBox(height: 8),
         Text('Nama', style: const TextStyle(fontWeight: FontWeight.bold)),
         Text(vicePresident.name, style: const TextStyle(fontSize: 15)),
@@ -128,7 +131,10 @@ class _CandidateScreenState extends State<CandidateScreen> {
   Column buildPresidentProfile(PresidentModel president) {
     return Column(
       children: [
-        CircleAvatar(radius: 40),
+        CircleAvatar(
+          radius: 40,
+          backgroundImage: NetworkImage(president.imageUrl.toString()),
+        ),
         const SizedBox(height: 8),
         Text('Nama', style: const TextStyle(fontWeight: FontWeight.bold)),
         Text(president.name, style: const TextStyle(fontSize: 15)),

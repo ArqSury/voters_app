@@ -29,11 +29,11 @@ class DbHelper {
         );
         //President Table
         await db.execute(
-          'CREATE TABLE $tablePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, vision TEXT, imageUrl TEXT)',
+          'CREATE TABLE $tablePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, vision TEXT, mission TEXT, imageUrl TEXT, vicePresidentId int)',
         );
         //Vice President Table
         await db.execute(
-          'CREATE TABLE $tableVicePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, mission TEXT, imageUrl TEXT)',
+          'CREATE TABLE $tableVicePresident (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, education TEXT, experience TEXT, achivement TEXT, vision TEXT, mission TEXT, imageUrl TEXT)',
         );
         //Candidate Pair Table
         await db.execute(
