@@ -43,17 +43,13 @@ class PresidentModel {
       vicePresidentId: map['vicePresidentId'] != null
           ? map['vicePresidentId'] as int
           : null,
-      name: map['name'] as String,
-      education: map['education'] as String,
-      experience: map['experience'] != null
-          ? map['experience'] as String
-          : null,
-      achivement: map['achivement'] != null
-          ? map['achivement'] as String
-          : null,
-      vision: map['vision'] as String,
-      mission: map['mission'] as String,
-      imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
+      name: (map['name'] ?? '') as String,
+      education: (map['education'] ?? '') as String,
+      experience: map['experience']?.toString(),
+      achivement: map['achivement']?.toString(),
+      vision: (map['vision'] ?? '') as String,
+      mission: (map['mission'] ?? '') as String,
+      imageUrl: map['imageUrl']?.toString(),
     );
   }
 

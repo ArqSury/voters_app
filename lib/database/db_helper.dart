@@ -237,18 +237,21 @@ class DbHelper {
     final dbs = await db();
     final result = await dbs.rawQuery('''
     SELECT 
+      cp.id AS pairId,
       p.id AS presidentId,
       p.name AS presidentName,
       p.education AS pEducation,
       p.experience AS pExperience,
       p.achivement AS pAchivement,
       p.vision AS pVision,
+      p.mission AS pMission,
       p.imageUrl AS pImage,
       v.id AS vicePresidentId,
       v.name AS vicePresidentName,
       v.education AS vEducation,
       v.experience AS vExperience,
       v.achivement AS vAchivement,
+      v.vision AS vVision,
       v.mission AS vMission,
       v.imageUrl AS vImage
     FROM $tableCandidatePair cp
@@ -258,24 +261,25 @@ class DbHelper {
     return result.map((row) {
       return {
         'pairId': row['pairId'],
-        'president': PresidentModel.fromMap({
+        'president': {
           'id': row['presidentId'],
-          'name': row['presidentName'],
-          'education': row['pEducation'],
-          'experience': row['pExperience'],
-          'achivement': row['pAchivement'],
-          'vision': row['pVision'],
-          'mission': row['pMission'],
-          'imageUrl': row['pImage'],
+          'name': row['presidentName'] ?? '',
+          'education': row['pEducation'] ?? '',
+          'experience': row['pExperience'] ?? '',
+          'achivement': row['pAchivement'] ?? '',
+          'vision': row['pVision'] ?? '',
+          'mission': row['pMission'] ?? '',
+          'imageUrl': row['pImage'] ?? '',
           'vicePresidentId': row['vicePresidentId'],
-        }).toMap(),
+        },
         'vice_president': {
           'id': row['vicePresidentId'],
-          'name': row['vicePresidentName'],
-          'education': row['vEducation'],
-          'experience': row['vExperience'],
-          'achivement': row['vAchivement'],
-          'mission': row['vMission'],
+          'name': row['vicePresidentName'] ?? '',
+          'education': row['vEducation'] ?? '',
+          'experience': row['vExperience'] ?? '',
+          'achivement': row['vAchivement'] ?? '',
+          'vision': row['vVision'] ?? '',
+          'mission': row['vMission'] ?? '',
           'imageUrl': row['vImage'],
         },
       };

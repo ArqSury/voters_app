@@ -142,6 +142,7 @@ class _AdminPageState extends State<AdminPage> {
             TextButton(
               onPressed: () async {
                 final updatePresident = PresidentModel(
+                  id: president.id,
                   name: editPresImageCon.text,
                   education: editPresEduCon.text,
                   experience: editPresExpCon.text,
@@ -151,6 +152,7 @@ class _AdminPageState extends State<AdminPage> {
                   mission: editMissionCon.text,
                 );
                 final updateVicePresident = VicePresidentModel(
+                  id: vicePresident.id,
                   name: editViceImageCon.text,
                   education: editViceEduCon.text,
                   experience: editViceExpCon.text,
@@ -304,7 +306,8 @@ class _AdminPageState extends State<AdminPage> {
         final vicePresident = VicePresidentModel.fromMap(
           pair['vice_president'],
         );
-        return buildCard(pair['id'], president, vicePresident);
+        final pairId = pair['id'] ?? 0;
+        return buildCard(pairId, president, vicePresident, index + 1);
       },
     );
   }
@@ -313,6 +316,7 @@ class _AdminPageState extends State<AdminPage> {
     int pairId,
     PresidentModel president,
     VicePresidentModel vicePresident,
+    int number,
   ) {
     return Card(
       elevation: 6,
@@ -326,7 +330,7 @@ class _AdminPageState extends State<AdminPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Pasangan Calon ${candidatePairs[pairId]}',
+              'Pasangan Calon $number',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
             SizedBox(height: 8),
@@ -334,7 +338,7 @@ class _AdminPageState extends State<AdminPage> {
               leading: Icon(Icons.person),
               title: Text(
                 '${president.name} & ${vicePresident.name}',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               subtitle: Text(president.vision),
               trailing: Row(
