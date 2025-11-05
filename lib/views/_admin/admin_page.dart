@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
@@ -6,7 +7,6 @@ import 'package:voters_app/function/build_button.dart';
 import 'package:voters_app/function/build_textformfield.dart';
 import 'package:voters_app/model/president_model.dart';
 import 'package:voters_app/model/vice_president_model.dart';
-import 'package:voters_app/views/_admin/admin_login_page.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -165,10 +165,10 @@ class _AdminPageState extends State<AdminPage> {
                   president: updatePresident,
                   vicePresident: updateVicePresident,
                 );
-
                 Fluttertoast.showToast(
                   msg: 'Data Pasangan Calon berhasil diperbarui!',
                 );
+
                 await loadCandidates();
                 if (mounted) Navigator.pop(context);
               },
@@ -194,13 +194,10 @@ class _AdminPageState extends State<AdminPage> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => AdminLoginPage()),
-                  (route) => false,
-                );
+                SystemNavigator.pop();
               },
               icon: Icon(Icons.logout),
+              tooltip: 'Keluar Aplikasi',
             ),
           ],
         ),
