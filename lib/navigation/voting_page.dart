@@ -101,31 +101,35 @@ class _VotingPageState extends State<VotingPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 4,
       margin: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          Text(
-            '${pres.name} & ${vice.name}',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              buildPresidentImage(pres),
-              buildVicePresidentImage(vice),
-            ],
-          ),
-          SizedBox(height: 12),
-          BuildButton(
-            text: hasVoted ? 'Sudah memilih' : 'Pilih',
-            width: 60,
-            height: 60,
-            onPressed: hasVoted
-                ? null
-                : () => _voteForCandidate(pair['id'] ?? pair['pairId']),
-            backgroundColor: hasVoted ? Colors.grey : AppColor.primary,
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            Text(
+              '${pres.name} & ${vice.name}',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                buildPresidentImage(pres),
+                buildVicePresidentImage(vice),
+              ],
+            ),
+            SizedBox(height: 12),
+            BuildButton(
+              text: hasVoted ? 'Sudah memilih' : 'Pilih',
+              color: Colors.black,
+              width: 120,
+              height: 60,
+              onPressed: hasVoted
+                  ? null
+                  : () => _voteForCandidate(pair['id'] ?? pair['pairId']),
+              backgroundColor: hasVoted ? Colors.grey : AppColor.primary,
+            ),
+          ],
+        ),
       ),
     );
   }

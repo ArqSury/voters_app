@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Container buildUserVote() {
     final voted = hasVoted ?? false;
     return Container(
-      height: 300,
+      height: 560,
       width: double.infinity,
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
@@ -74,10 +74,10 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           SizedBox(height: 10),
           Text(
-            'Gunakan Hak Pilihmu!',
+            'Gunakan\n Hak Pilihmu!',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 24,
+              fontSize: 36,
               fontFamily: 'Times New Roman',
             ),
             textAlign: TextAlign.center,
