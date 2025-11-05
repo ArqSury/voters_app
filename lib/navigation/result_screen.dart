@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:voters_app/constant/app_color.dart';
+import 'package:voters_app/database/db_helper.dart';
 
 class ResultScreen extends StatefulWidget {
   const ResultScreen({super.key});
@@ -8,12 +10,130 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  List<Map<String, dynamic>> results = [];
+  int totalVotes = 0;
+  List<bool> animateBars = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadResult();
+  }
+
+  Future<void> _loadResult() async {
+    final data = await DbHelper.getVotingResults();
+    int sum = 0;
+    for (var item in data) {
+      sum += (item['votes'] ?? 0) as int;
+    }
+    setState(() {
+      results = data;
+      totalVotes = sum;
+      animateBars = List.generate(data.length, (_) => false);
+    });
+
+    for (int i = 0; i < data.length; i++) {
+      Future.delayed(Duration(milliseconds: 150 * (i + 1)), () {
+        if (mounted) {
+          setState(() {
+            animateBars[i] = true;
+          });
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(child: Column(children: [Text('Result')])),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Hasil Voting'),
+          centerTitle: true,
+          backgroundColor: AppColor.primary,
+        ),
+        body: results.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text('Belum ada Hasil Voting!')],
+                ),
+              )
+            : ListView.builder(
+                itemCount: results.length,
+                itemBuilder: (context, index) {
+                  final item = results[index];
+                  final votes = (item['votes'] ?? 0) as int;
+                  final percent = totalVotes == 0
+                      ? 0
+                      : (votes / totalVotes * 100);
+                  return builCard(item, index, context, percent, votes);
+                },
+              ),
       ),
+    );
+  }
+
+  Card builCard(
+    Map<String, dynamic> item,
+    int index,
+    BuildContext context,
+    num percent,
+    int votes,
+  ) {
+    return Card(
+      margin: const EdgeInsets.all(12),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${item['presidentName']} & ${item['viceName']}',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            SizedBox(height: 8),
+            buildAnimatedBar(index, context, percent),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Suara: $votes'),
+                Text('${percent.toStringAsFixed(1)}%'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Stack buildAnimatedBar(int index, BuildContext context, num percent) {
+    return Stack(
+      children: [
+        Container(
+          height: 22,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColor.backup,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 900),
+          curve: Curves.easeInOutCubic,
+          height: 22,
+          width: animateBars[index]
+              ? (MediaQuery.of(context).size.width - 80) * (percent / 100)
+              : 0,
+          decoration: BoxDecoration(
+            color: AppColor.primary,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ],
     );
   }
 }

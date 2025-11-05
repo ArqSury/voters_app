@@ -64,12 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Container buildUserVote() {
     final voted = hasVoted ?? false;
     return Container(
-      height: 140,
+      height: 300,
       width: double.infinity,
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: decorationContainer(),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: 10),
           Text(
