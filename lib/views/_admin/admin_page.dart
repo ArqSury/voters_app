@@ -50,6 +50,139 @@ class _AdminPageState extends State<AdminPage> {
     await loadCandidates();
   }
 
+  void _showEditDialog(
+    int pairId,
+    PresidentModel president,
+    VicePresidentModel vicePresident,
+  ) {
+    final editPresNameCon = TextEditingController(text: president.name);
+    final editViceNameCon = TextEditingController(text: vicePresident.name);
+    final editPresEduCon = TextEditingController(text: president.education);
+    final editViceEduCon = TextEditingController(text: vicePresident.education);
+    final editPresExpCon = TextEditingController(text: president.experience);
+    final editViceExpCon = TextEditingController(
+      text: vicePresident.experience,
+    );
+    final editPresAchiveCon = TextEditingController(text: president.achivement);
+    final editViceAchiveCon = TextEditingController(
+      text: vicePresident.achivement,
+    );
+    final editVisionCon = TextEditingController(text: president.vision);
+    final editMissionCon = TextEditingController(text: president.mission);
+    final editPresImageCon = TextEditingController(text: president.imageUrl);
+    final editViceImageCon = TextEditingController(
+      text: vicePresident.imageUrl,
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text('Edit Pasangan Calon'),
+          content: SingleChildScrollView(
+            child: Column(
+              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Calon Presiden',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                BuildTextformfield(hint: 'Nama', controller: editPresNameCon),
+                BuildTextformfield(hint: 'Edukasi', controller: editPresEduCon),
+                BuildTextformfield(
+                  hint: 'Pengalaman',
+                  controller: editPresExpCon,
+                ),
+                BuildTextformfield(
+                  hint: 'Pencapaian',
+                  controller: editPresAchiveCon,
+                ),
+                BuildTextformfield(
+                  hint: 'Foto profil',
+                  controller: editPresImageCon,
+                ),
+                Text(
+                  'Calon Wakil Presiden',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                BuildTextformfield(hint: 'Nama', controller: editViceNameCon),
+                BuildTextformfield(hint: 'Edukasi', controller: editViceEduCon),
+                BuildTextformfield(
+                  hint: 'Pengalaman',
+                  controller: editViceExpCon,
+                ),
+                BuildTextformfield(
+                  hint: 'Pencapaian',
+                  controller: editViceAchiveCon,
+                ),
+                BuildTextformfield(
+                  hint: 'Foto Profil',
+                  controller: editViceImageCon,
+                ),
+                Text(
+                  'Visi & Misi',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                BuildTextformfield(hint: 'Visi', controller: editVisionCon),
+                BuildTextformfield(hint: 'Misi', controller: editMissionCon),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Batal', style: TextStyle(color: Colors.red)),
+            ),
+            TextButton(
+              onPressed: () async {
+                final updatePresident = PresidentModel(
+                  name: editPresImageCon.text,
+                  education: editPresEduCon.text,
+                  experience: editPresExpCon.text,
+                  achivement: editPresAchiveCon.text,
+                  imageUrl: editPresImageCon.text,
+                  vision: editVisionCon.text,
+                  mission: editMissionCon.text,
+                );
+                final updateVicePresident = VicePresidentModel(
+                  name: editViceImageCon.text,
+                  education: editViceEduCon.text,
+                  experience: editViceExpCon.text,
+                  achivement: editViceAchiveCon.text,
+                  imageUrl: editViceImageCon.text,
+                  vision: editVisionCon.text,
+                  mission: editMissionCon.text,
+                );
+
+                await DbHelper.updateCandidatePair(
+                  pairId: pairId,
+                  president: updatePresident,
+                  vicePresident: updateVicePresident,
+                );
+
+                Fluttertoast.showToast(
+                  msg: 'Data Pasangan Calon berhasil diperbarui!',
+                );
+                await loadCandidates();
+                if (mounted) Navigator.pop(context);
+              },
+              child: Text(
+                'Simpan',
+                style: TextStyle(color: AppColor.textButton),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -210,6 +343,12 @@ class _AdminPageState extends State<AdminPage> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  IconButton(
+                    onPressed: () {
+                      _showEditDialog(pairId, president, vicePresident);
+                    },
+                    icon: Icon(Icons.edit, color: AppColor.textButton),
+                  ),
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () async {

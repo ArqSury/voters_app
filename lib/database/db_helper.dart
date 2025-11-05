@@ -282,6 +282,46 @@ class DbHelper {
     }).toList();
   }
 
+  static Future<void> updateCandidatePair({
+    required int pairId,
+    required PresidentModel president,
+    required VicePresidentModel vicePresident,
+  }) async {
+    final dbs = await db();
+
+    await dbs.transaction((txn) async {
+      final List<Map<String, dynamic>> pair = await txn.query(
+        tableCandidatePair,
+        where: 'id = ?',
+        whereArgs: [pairId],
+        limit: 1,
+      );
+
+      if (pair.isEmpty) return false;
+
+      final int presId = pair.first['presidentId'] as int;
+      final int viceId = pair.first['vicePresidentId'] as int;
+
+      await txn.update(
+        tablePresident,
+        president.toMap(),
+        where: 'id = ?',
+        whereArgs: [presId],
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+      await txn.update(
+        tableVicePresident,
+        vicePresident.toMap(),
+        where: 'id = ?',
+        whereArgs: [viceId],
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+      return true;
+    });
+  }
+
   static Future<void> deleteCandidatePair(int pairId) async {
     final dbs = await db();
 
