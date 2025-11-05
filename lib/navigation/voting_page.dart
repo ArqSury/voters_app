@@ -36,6 +36,7 @@ class _VotingPageState extends State<VotingPage> {
   Future<void> _voteForCandidate(int pairId) async {
     if (hasVoted) {
       Fluttertoast.showToast(msg: 'Anda sudah memberikan suara');
+      return;
     }
 
     await DbHelper.castVote(widget.citizenId, pairId);
@@ -43,6 +44,8 @@ class _VotingPageState extends State<VotingPage> {
     setState(() {
       hasVoted = true;
     });
+
+    Navigator.pop(context);
   }
 
   @override
@@ -56,7 +59,19 @@ class _VotingPageState extends State<VotingPage> {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Center(
-        child: candidatePairs.isEmpty
+        child: hasVoted
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Terima kasih\n'
+                    'Sudah Menggunakan\n'
+                    'Hak Pilihmu',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              )
+            : candidatePairs.isEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [Text('Belum ada pasangan calon')],
@@ -86,25 +101,54 @@ class _VotingPageState extends State<VotingPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 4,
       margin: const EdgeInsets.all(8),
-      child: ListTile(
-        leading: Row(
-          children: [
-            Image(image: NetworkImage(pres.imageUrl ?? '')),
-            Image(image: NetworkImage(vice.imageUrl ?? '')),
-          ],
-        ),
-        title: Text(
-          '${pres.name} & ${vice.name}',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        trailing: BuildButton(
-          text: hasVoted ? 'Sudah memilih' : 'Pilih',
-          width: 60,
-          height: 60,
-          onPressed: hasVoted ? null : () => _voteForCandidate(pair['id']),
-          backgroundColor: hasVoted ? Colors.grey : AppColor.primary,
-        ),
+      child: Column(
+        children: [
+          Text(
+            '${pres.name} & ${vice.name}',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              buildPresidentImage(pres),
+              buildVicePresidentImage(vice),
+            ],
+          ),
+          SizedBox(height: 12),
+          BuildButton(
+            text: hasVoted ? 'Sudah memilih' : 'Pilih',
+            width: 60,
+            height: 60,
+            onPressed: hasVoted
+                ? null
+                : () => _voteForCandidate(pair['id'] ?? pair['pairId']),
+            backgroundColor: hasVoted ? Colors.grey : AppColor.primary,
+          ),
+        ],
       ),
+    );
+  }
+
+  Image buildVicePresidentImage(VicePresidentModel vice) {
+    return Image(
+      image: (vice.imageUrl != null && vice.imageUrl!.isNotEmpty)
+          ? NetworkImage(vice.imageUrl!)
+          : AssetImage('assets/images/logo/profil_foto.jpg') as ImageProvider,
+      width: 100,
+      height: 100,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Image buildPresidentImage(PresidentModel pres) {
+    return Image(
+      image: (pres.imageUrl != null && pres.imageUrl!.isNotEmpty)
+          ? NetworkImage(pres.imageUrl!)
+          : AssetImage('assets/images/logo/profil_foto.jpg') as ImageProvider,
+      width: 100,
+      height: 100,
+      fit: BoxFit.cover,
     );
   }
 

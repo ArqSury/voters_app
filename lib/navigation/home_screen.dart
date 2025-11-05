@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
-
 import 'package:voters_app/model/citizen_model.dart';
 import 'package:voters_app/navigation/user_profile.dart';
+import 'package:voters_app/navigation/voting_page.dart';
 import 'package:voters_app/share_preference/preference_handler.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   CitizenModel? dataUser;
+  bool? hasVoted;
 
   @override
   void initState() {
@@ -22,11 +23,14 @@ class _HomeScreenState extends State<HomeScreen> {
     getUser();
   }
 
-  getUser() async {
+  Future<void> getUser() async {
     int id = await PreferenceHandler.getId();
     final data = await DbHelper.getCitizenById(id);
-    dataUser = data;
-    setState(() {});
+    final voted = await DbHelper.hasCitizenVoted(id);
+    setState(() {
+      dataUser = data;
+      hasVoted = voted;
+    });
   }
 
   @override
@@ -57,7 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Container buildUserVote({bool isVoted = false}) {
+  Container buildUserVote() {
+    final voted = hasVoted ?? false;
     return Container(
       height: 140,
       width: double.infinity,
@@ -78,18 +83,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 10),
           TextButton(
-            onPressed: () {
-              setState(() {});
-            },
-            child: isVoted
-                ? Text(
-                    'Voted',
-                    style: TextStyle(color: Colors.red, fontSize: 16),
-                  )
-                : Text(
-                    'Vote',
-                    style: TextStyle(color: AppColor.textButton, fontSize: 16),
-                  ),
+            onPressed: voted
+                ? null
+                : () {
+                    if (dataUser != null && dataUser!.id != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              VotingPage(citizenId: dataUser!.id!),
+                        ),
+                      );
+                    }
+                  },
+            child: Text(
+              voted ? 'Sudah Memilih' : 'Vote Sekarang',
+              style: TextStyle(
+                color: voted ? Colors.red : AppColor.textButton,
+                fontSize: 16,
+              ),
+            ),
           ),
         ],
       ),
