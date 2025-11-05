@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
@@ -95,7 +97,7 @@ class _CandidateScreenState extends State<CandidateScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Pasangan Calon ${candidatePairs[index]}',
+              'Pasangan Calon ${index + 1}',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             SizedBox(height: 10),
@@ -115,16 +117,19 @@ class _CandidateScreenState extends State<CandidateScreen> {
   }
 
   Column buildVicePresidentProfile(VicePresidentModel vicePresident) {
+    ImageProvider imageProvider;
+    if (vicePresident.imageUrl != null && vicePresident.imageUrl!.isNotEmpty) {
+      if (vicePresident.imageUrl!.startsWith('http')) {
+        imageProvider = NetworkImage(vicePresident.imageUrl!);
+      } else {
+        imageProvider = FileImage(File(vicePresident.imageUrl!));
+      }
+    } else {
+      imageProvider = const AssetImage('assets/images/logo/profil_foto.jpg');
+    }
     return Column(
       children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage:
-              (vicePresident.imageUrl != null &&
-                  vicePresident.imageUrl!.isNotEmpty)
-              ? NetworkImage(vicePresident.imageUrl!)
-              : AssetImage('assets/images/logo/profil_foto.jpg'),
-        ),
+        CircleAvatar(radius: 40, backgroundImage: imageProvider),
         SizedBox(height: 8),
         Text('Wakil Presiden', style: TextStyle(fontWeight: FontWeight.bold)),
         Text('Nama', style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -147,15 +152,19 @@ class _CandidateScreenState extends State<CandidateScreen> {
   }
 
   Column buildPresidentProfile(PresidentModel president) {
+    ImageProvider imageProvider;
+    if (president.imageUrl != null && president.imageUrl!.isNotEmpty) {
+      if (president.imageUrl!.startsWith('http')) {
+        imageProvider = NetworkImage(president.imageUrl!);
+      } else {
+        imageProvider = FileImage(File(president.imageUrl!));
+      }
+    } else {
+      imageProvider = const AssetImage('assets/images/logo/profil_foto.jpg');
+    }
     return Column(
       children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage:
-              (president.imageUrl != null && president.imageUrl!.isNotEmpty)
-              ? NetworkImage(president.imageUrl!)
-              : AssetImage('assets/images/logo/profil_foto.jpg'),
-        ),
+        CircleAvatar(radius: 40, backgroundImage: imageProvider),
         const SizedBox(height: 8),
         Text('Presiden', style: TextStyle(fontWeight: FontWeight.bold)),
         Text('Nama', style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -189,14 +198,6 @@ class _CandidateScreenState extends State<CandidateScreen> {
         Text('Visi Pasangan: ${pres.vision}'),
         Text('Misi Pasangan: ${vp.mission}'),
       ],
-    );
-  }
-
-  BoxDecoration decorationContainer() {
-    return BoxDecoration(
-      color: AppColor.backup,
-      borderRadius: BorderRadius.all(Radius.circular(20)),
-      boxShadow: [BoxShadow(blurRadius: 8)],
     );
   }
 
