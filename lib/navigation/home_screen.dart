@@ -118,26 +118,29 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(12),
       alignment: AlignmentDirectional.centerStart,
       decoration: decorationContainer(),
-      child: Row(
-        children: [
-          Text(
-            'Halo, ${dataUser?.name ?? ''}!',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Spacer(),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UserProfile()),
-              );
-            },
-            child: Text(
-              'Lihat Profil',
-              style: TextStyle(color: AppColor.secondary),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            Text(
+              'Halo, ${dataUser?.name ?? ''}!',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-          ),
-        ],
+            Spacer(),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserProfile()),
+                );
+              },
+              child: Text(
+                'Lihat Profil',
+                style: TextStyle(color: AppColor.secondary),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
