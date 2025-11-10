@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   BoxDecoration decorationContainer() {
     return BoxDecoration(
-      color: AppColor.backup,
+      color: AppColor.background,
       borderRadius: BorderRadius.all(Radius.circular(20)),
       boxShadow: [BoxShadow(blurRadius: 8)],
     );

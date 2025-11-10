@@ -121,7 +121,7 @@ class _ResultScreenState extends State<ResultScreen> {
           height: 22,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColor.backup,
+            color: AppColor.secondary,
             borderRadius: BorderRadius.circular(10),
           ),
         ),
