@@ -25,7 +25,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     height: 300,
                   ),
                   Text(
-                    '"Voters On! adalah aplikasi pemilu untuk mengambil dan menghitung suara pilihan rakyat Indonesia yang menjunjung asas LUBERJURDIL. Aplikasi ini memiliki beberapa fitur seperti profil biodata calon-calon anggota pemerintahan yang akan dipilih. Selain itu juga aplikasi ini memiliki fitur Live Count Vote dimana akan ada perhitungan suara secara langsung dan seksama yang bisa dilihat oleh seluruh rakyat Indonesia sehingga diharapkan pemilu berjalan adil serta efektif dan efesien"',
+                    '"Voters ON! adalah aplikasi e-voting yang dirancang untuk memudahkan proses pemilihan secara digital. Dengan tampilan sederhana dan fitur yang mudah digunakan, pengguna dapat memberikan suara mereka secara aman, cepat, dan transparan."',
                     style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
                     textAlign: TextAlign.justify,
                   ),
