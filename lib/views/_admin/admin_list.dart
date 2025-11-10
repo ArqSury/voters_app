@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
 import 'package:voters_app/function/build_textformfield.dart';
@@ -151,9 +150,9 @@ class _AdminListState extends State<AdminList> {
                   president: updatePresident,
                   vicePresident: updateVicePresident,
                 );
-                Fluttertoast.showToast(
-                  msg: 'Data Pasangan Calon berhasil diperbarui!',
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(buildSnackbar('Profil Calon berhasil diubah'));
 
                 await loadCandidates();
                 if (mounted) Navigator.pop(context);
@@ -256,7 +255,9 @@ class _AdminListState extends State<AdminList> {
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () async {
                       await deleteCandidate(pairId);
-                      Fluttertoast.showToast(msg: 'Pasangan dihapus');
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(buildSnackbar('Calon berhasil dihapus'));
                     },
                   ),
                 ],
