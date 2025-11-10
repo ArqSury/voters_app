@@ -39,13 +39,31 @@ class _VotingPageState extends State<VotingPage> {
       return;
     }
 
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Konfirmasi'),
+        content: Text('Apakah Anda yakin ingin memilih pasangan ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Ya'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
     await DbHelper.castVote(widget.citizenId, pairId);
     Fluttertoast.showToast(msg: 'Vote Anda berhasil disimpan!');
     setState(() {
       hasVoted = true;
     });
-
-    Navigator.pop(context);
   }
 
   @override
@@ -75,6 +93,7 @@ class _VotingPageState extends State<VotingPage> {
                     'Terima kasih\n'
                     'Sudah Menggunakan\n'
                     'Hak Pilihmu',
+                    textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -101,22 +120,21 @@ class _VotingPageState extends State<VotingPage> {
                 itemCount: candidatePairs.length,
                 itemBuilder: (context, index) {
                   final pair = candidatePairs[index];
-                  final pres = PresidentModel.fromMap(pair['president']);
-                  final vice = VicePresidentModel.fromMap(
-                    pair['vice_president'],
+                  final pres = PresidentModel.fromMap(
+                    Map<String, dynamic>.from(pair['president'] ?? {}),
                   );
-                  return buildCard(pres, vice, pair);
+                  final vice = VicePresidentModel.fromMap(
+                    Map<String, dynamic>.from(pair['vice_president'] ?? {}),
+                  );
+                  final pairId = pair['pairId'] ?? 0;
+                  return buildCard(pres, vice, pairId);
                 },
               ),
       ),
     );
   }
 
-  Card buildCard(
-    PresidentModel pres,
-    VicePresidentModel vice,
-    Map<String, dynamic> pair,
-  ) {
+  Card buildCard(PresidentModel pres, VicePresidentModel vice, int pairId) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 4,
@@ -143,9 +161,7 @@ class _VotingPageState extends State<VotingPage> {
               color: AppColor.secondary,
               width: 120,
               height: 60,
-              onPressed: hasVoted
-                  ? null
-                  : () => _voteForCandidate(pair['id'] ?? pair['pairId']),
+              onPressed: hasVoted ? null : () => _voteForCandidate(pairId),
               backgroundColor: hasVoted ? AppColor.text : AppColor.primary,
             ),
           ],

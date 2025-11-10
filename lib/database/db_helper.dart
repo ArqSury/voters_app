@@ -227,41 +227,26 @@ class DbHelper {
     final dbs = await db();
 
     await dbs.transaction((txn) async {
-      // Get current pair count
-      final oldCount =
-          Sqflite.firstIntValue(
-            await txn.rawQuery('SELECT COUNT(*) FROM $tableCandidatePair'),
-          ) ??
-          0;
-
       final vpId = await txn.insert(
         tableVicePresident,
         vicePresident.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
+
       president.vicePresidentId = vpId;
       final presId = await txn.insert(
         tablePresident,
         president.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      await txn.insert(tableCandidatePair, {
+
+      final pairId = await txn.insert(tableCandidatePair, {
         'presidentId': presId,
         'vicePresidentId': vpId,
         'votes': 0,
       }, conflictAlgorithm: ConflictAlgorithm.replace);
 
-      // Get new count
-      final newCount =
-          Sqflite.firstIntValue(
-            await txn.rawQuery('SELECT COUNT(*) FROM $tableCandidatePair'),
-          ) ??
-          0;
-
-      // Reset votes only if pair count changed
-      if (newCount != oldCount) {
-        await resetAllVotes();
-      }
+      return pairId;
     });
   }
 

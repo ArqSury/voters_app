@@ -23,7 +23,7 @@ class _ResultScreenState extends State<ResultScreen> {
   Future<void> _loadResult() async {
     final data = await DbHelper.getVotingResults();
     int sum = 0;
-    for (var item in data) {
+    for (final item in data) {
       sum += (item['votes'] ?? 0) as int;
     }
     setState(() {
@@ -54,6 +54,13 @@ class _ResultScreenState extends State<ResultScreen> {
           ),
           centerTitle: true,
           backgroundColor: AppColor.primary,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh, color: Colors.white),
+              tooltip: 'Muat Ulang',
+              onPressed: _loadResult,
+            ),
+          ],
         ),
         body: results.isEmpty
             ? Center(
@@ -62,28 +69,42 @@ class _ResultScreenState extends State<ResultScreen> {
                   children: [Text('Belum ada Hasil Voting!')],
                 ),
               )
-            : ListView.builder(
-                itemCount: results.length,
-                itemBuilder: (context, index) {
-                  final item = results[index];
-                  final votes = (item['votes'] ?? 0) as int;
-                  final percent = totalVotes == 0
-                      ? 0
-                      : (votes / totalVotes * 100);
-                  return builCard(item, index, context, percent, votes);
-                },
+            : RefreshIndicator(
+                onRefresh: _loadResult,
+                child: ListView.builder(
+                  itemCount: results.length,
+                  itemBuilder: (context, index) {
+                    final item = results[index];
+                    final votes = (item['votes'] ?? 0) as int;
+                    final percent = totalVotes == 0
+                        ? 0.0
+                        : (votes / totalVotes * 100);
+                    final presName = item['presidentName'] ?? 'Presiden';
+                    final viceName =
+                        item['vicePresidentName'] ?? 'Wakil Presiden';
+                    return builCard(
+                      presName: presName,
+                      viceName: viceName,
+                      percent: percent,
+                      votes: votes,
+                      index: index,
+                      context: context,
+                    );
+                  },
+                ),
               ),
       ),
     );
   }
 
-  Card builCard(
-    Map<String, dynamic> item,
-    int index,
-    BuildContext context,
-    num percent,
-    int votes,
-  ) {
+  Card builCard({
+    required String presName,
+    required String viceName,
+    required num percent,
+    required int votes,
+    required int index,
+    required BuildContext context,
+  }) {
     return Card(
       color: AppColor.background,
       margin: const EdgeInsets.all(12),
@@ -95,7 +116,7 @@ class _ResultScreenState extends State<ResultScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${item['presidentName']} & ${item['viceName']}',
+              '$presName & $viceName',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             SizedBox(height: 8),
@@ -115,6 +136,7 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   Stack buildAnimatedBar(int index, BuildContext context, num percent) {
+    final maxWidth = MediaQuery.of(context).size.width - 80;
     return Stack(
       children: [
         Container(
@@ -129,9 +151,7 @@ class _ResultScreenState extends State<ResultScreen> {
           duration: const Duration(milliseconds: 900),
           curve: Curves.easeInOutCubic,
           height: 22,
-          width: animateBars[index]
-              ? (MediaQuery.of(context).size.width - 80) * (percent / 100)
-              : 0,
+          width: animateBars[index] ? maxWidth * (percent / 100) : 0,
           decoration: BoxDecoration(
             color: AppColor.textButton,
             borderRadius: BorderRadius.circular(10),
