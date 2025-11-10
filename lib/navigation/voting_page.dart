@@ -51,7 +51,15 @@ class _VotingPageState extends State<VotingPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(body: Stack(children: [buildBackground(), buildLayer()])),
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text('Ayo Memilih!', style: TextStyle(fontSize: 30)),
+          backgroundColor: AppColor.background,
+          centerTitle: true,
+        ),
+        body: Stack(children: [buildBackground(), buildLayer()]),
+      ),
     );
   }
 
@@ -74,7 +82,19 @@ class _VotingPageState extends State<VotingPage> {
             : candidatePairs.isEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text('Belum ada pasangan calon')],
+                children: [
+                  Text('Belum ada pasangan calon'),
+                  BuildButton(
+                    text: 'Kembali',
+                    width: 120,
+                    height: 60,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    backgroundColor: AppColor.primary,
+                    color: AppColor.secondary,
+                  ),
+                ],
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(12),
@@ -120,13 +140,13 @@ class _VotingPageState extends State<VotingPage> {
             SizedBox(height: 12),
             BuildButton(
               text: hasVoted ? 'Sudah memilih' : 'Pilih',
-              color: Colors.black,
+              color: AppColor.secondary,
               width: 120,
               height: 60,
               onPressed: hasVoted
                   ? null
                   : () => _voteForCandidate(pair['id'] ?? pair['pairId']),
-              backgroundColor: hasVoted ? Colors.grey : AppColor.primary,
+              backgroundColor: hasVoted ? AppColor.text : AppColor.primary,
             ),
           ],
         ),

@@ -47,9 +47,9 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             BuildButton(
               text: 'MASUK',
               width: 120,
-              height: 80,
-              backgroundColor: AppColor.button,
-              color: Colors.black,
+              height: 60,
+              backgroundColor: AppColor.primary,
+              color: AppColor.secondary,
               fontSize: 20,
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
@@ -102,7 +102,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                       );
                     });
                   },
-                  child: Text('Daftar', style: TextStyle(fontSize: 16)),
+                  child: Text(
+                    'Daftar',
+                    style: TextStyle(fontSize: 16, color: AppColor.textButton),
+                  ),
                 ),
               ],
             ),

@@ -90,13 +90,13 @@ class _UserProfileState extends State<UserProfile> {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text('Kembali', style: TextStyle(color: Colors.red)),
+          child: Text('Kembali', style: TextStyle(color: AppColor.failed)),
         ),
         TextButton(
           onPressed: () {
             Navigator.pop(context, true);
           },
-          child: Text('Simpan', style: TextStyle(color: Colors.blue)),
+          child: Text('Simpan', style: TextStyle(color: AppColor.textButton)),
         ),
       ],
     );
@@ -107,10 +107,15 @@ class _UserProfileState extends State<UserProfile> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColor.button,
-          title: Text('Profil Anda'),
+          automaticallyImplyLeading: false,
+          backgroundColor: AppColor.primary,
+          title: Text(
+            'Profil Anda',
+            style: TextStyle(color: AppColor.secondary),
+          ),
           actions: [
             IconButton(
+              color: AppColor.secondary,
               onPressed: () {
                 _onEdit(dataUser!);
               },
@@ -155,16 +160,35 @@ class _UserProfileState extends State<UserProfile> {
             buildProfile(text: dataUser?.phone.toString() ?? ''),
             buildProfile(text: dataUser?.password ?? '', isPassword: true),
             SizedBox(height: 40),
-            BuildButton(
-              text: 'KELUAR',
-              width: 120,
-              height: 80,
-              onPressed: () {
-                _logOut();
-              },
-              backgroundColor: AppColor.button,
-              color: Colors.black,
-              fontSize: 18,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Spacer(),
+                BuildButton(
+                  text: 'KEMBALI',
+                  width: 140,
+                  height: 50,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  fontSize: 18,
+                  backgroundColor: AppColor.primary,
+                  color: AppColor.secondary,
+                ),
+                Spacer(),
+                BuildButton(
+                  text: 'KELUAR',
+                  width: 120,
+                  height: 50,
+                  onPressed: () {
+                    _logOut();
+                  },
+                  backgroundColor: AppColor.primary,
+                  color: AppColor.secondary,
+                  fontSize: 18,
+                ),
+                Spacer(),
+              ],
             ),
           ],
         ),

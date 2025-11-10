@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/views/_admin/admin_login_page.dart';
 import 'package:voters_app/views/login_page.dart';
 
@@ -46,7 +47,7 @@ class _StartPageState extends State<StartPage> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFFF5DAA7), Color(0xFF957C62)],
+                        colors: [AppColor.primary, AppColor.secondary],
                         begin: AlignmentDirectional.topCenter,
                         end: AlignmentDirectional.bottomCenter,
                       ),

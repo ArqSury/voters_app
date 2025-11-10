@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text(
               voted ? 'Sudah Memilih' : 'Vote Sekarang',
               style: TextStyle(
-                color: voted ? Colors.red : AppColor.textButton,
+                color: voted ? AppColor.primary : AppColor.textButton,
                 fontSize: 16,
               ),
             ),
@@ -120,26 +120,26 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: decorationContainer(),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            Text(
-              'Halo, ${dataUser?.name ?? ''}!',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Spacer(),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UserProfile()),
-                );
-              },
-              child: Text(
-                'Lihat Profil',
-                style: TextStyle(color: AppColor.secondary),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              IconButton(
+                tooltip: 'Halaman Profil',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UserProfile()),
+                  );
+                },
+                icon: Icon(Icons.person, color: AppColor.textButton),
               ),
-            ),
-          ],
+              Text(
+                'Halo, ${dataUser?.name ?? ''}!',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColor.background, AppColor.primary, AppColor.secondary],
+          colors: [AppColor.primary, AppColor.secondary],
           begin: AlignmentDirectional.topCenter,
           end: AlignmentDirectional.bottomCenter,
         ),

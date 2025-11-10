@@ -35,7 +35,10 @@ class _CandidateScreenState extends State<CandidateScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColor.primary,
-          title: Text('Profil Calon'),
+          title: Text(
+            'Profil Calon',
+            style: TextStyle(color: AppColor.secondary),
+          ),
           centerTitle: true,
         ),
         body: Stack(
@@ -86,6 +89,7 @@ class _CandidateScreenState extends State<CandidateScreen> {
     VicePresidentModel vicePresident,
   ) {
     return Card(
+      color: AppColor.background,
       elevation: 8,
       margin: const EdgeInsets.all(12),
       shape: RoundedRectangleBorder(
@@ -205,18 +209,7 @@ class _CandidateScreenState extends State<CandidateScreen> {
     return Container(
       height: double.infinity,
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColor.backup,
-            AppColor.background,
-            AppColor.primary,
-            AppColor.secondary,
-          ],
-          begin: AlignmentDirectional.topStart,
-          end: AlignmentDirectional.bottomEnd,
-        ),
-      ),
+      color: AppColor.secondary,
     );
   }
 }

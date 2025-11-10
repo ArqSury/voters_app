@@ -55,7 +55,7 @@ class _MainPageState extends State<MainPage> {
             ),
           ],
           currentIndex: _selectedBar,
-          selectedItemColor: AppColor.background,
+          selectedItemColor: AppColor.secondary,
           onTap: _onBarTapped,
         ),
         body: Center(child: _navOptions.elementAt(_selectedBar)),

@@ -46,27 +46,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             SizedBox(height: 12),
             buildUserInput(),
             SizedBox(height: 20),
-            BuildButton(
-              text: 'DAFTAR',
-              width: 120,
-              height: 100,
-              backgroundColor: AppColor.button,
-              color: Colors.white,
-              onPressed: () {
-                if (_formkey.currentState!.validate()) {
-                  final CitizenModel dataCitizen = CitizenModel(
-                    name: nameC.text,
-                    province: provC.text,
-                    password: passC.text,
-                    phone: int.parse(noHpC.text),
-                    nik: int.parse(nikC.text),
-                  );
-                  DbHelper.registerCitizen(dataCitizen);
-                  Fluttertoast.showToast(msg: 'Anda berhasil mendaftar');
-                  Navigator.pop(context);
-                }
-              },
-            ),
+            regisButton(context),
             SizedBox(height: 20),
             Divider(color: Colors.black),
             SizedBox(height: 50),
@@ -81,13 +61,40 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       MaterialPageRoute(builder: (context) => LoginPage()),
                     );
                   },
-                  child: Text('Masuk', style: TextStyle(fontSize: 16)),
+                  child: Text(
+                    'Masuk',
+                    style: TextStyle(fontSize: 16, color: AppColor.textButton),
+                  ),
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  BuildButton regisButton(BuildContext context) {
+    return BuildButton(
+      text: 'DAFTAR',
+      width: 120,
+      height: 60,
+      backgroundColor: AppColor.primary,
+      color: Colors.white,
+      onPressed: () {
+        if (_formkey.currentState!.validate()) {
+          final CitizenModel dataCitizen = CitizenModel(
+            name: nameC.text,
+            province: provC.text,
+            password: passC.text,
+            phone: int.parse(noHpC.text),
+            nik: int.parse(nikC.text),
+          );
+          DbHelper.registerCitizen(dataCitizen);
+          Fluttertoast.showToast(msg: 'Anda berhasil mendaftar');
+          Navigator.pop(context);
+        }
+      },
     );
   }
 

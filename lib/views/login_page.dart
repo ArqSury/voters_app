@@ -45,48 +45,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 20),
             buildUserInput(),
-            BuildButton(
-              text: 'MASUK',
-              width: 120,
-              height: 80,
-              backgroundColor: AppColor.button,
-              color: Colors.black,
-              fontSize: 20,
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  PreferenceHandler.saveLogin(true);
-                  final data = await DbHelper.loginCitizen(
-                    name: nameCon.text,
-                    password: passCon.text,
-                  );
-                  if (data != null) {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainPage()),
-                      (route) => false,
-                    );
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text('Akun Salah'),
-                          content: Text('Isi semua data Anda dengan benar!'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('Kembali'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                }
-              },
-            ),
+            loginButton(context),
             Divider(color: Colors.black, height: 100),
             SizedBox(height: 20),
             Row(
@@ -104,13 +63,61 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     });
                   },
-                  child: Text('Daftar', style: TextStyle(fontSize: 16)),
+                  child: Text(
+                    'Daftar',
+                    style: TextStyle(fontSize: 16, color: AppColor.textButton),
+                  ),
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  BuildButton loginButton(BuildContext context) {
+    return BuildButton(
+      text: 'MASUK',
+      width: 120,
+      height: 60,
+      backgroundColor: AppColor.primary,
+      color: AppColor.secondary,
+      fontSize: 20,
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          PreferenceHandler.saveLogin(true);
+          final data = await DbHelper.loginCitizen(
+            name: nameCon.text,
+            password: passCon.text,
+          );
+          if (data != null) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => MainPage()),
+              (route) => false,
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Akun Salah'),
+                  content: Text('Isi semua data Anda dengan benar!'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Kembali'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        }
+      },
     );
   }
 

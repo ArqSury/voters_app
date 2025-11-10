@@ -42,13 +42,13 @@ class _AdminRegistrationPageState extends State<AdminRegistrationPage> {
             Divider(color: Colors.black, indent: 80, endIndent: 80),
             SizedBox(height: 12),
             buildUserInput(),
-            SizedBox(height: 20),
+            SizedBox(height: 60),
             BuildButton(
               text: 'DAFTAR',
               width: 120,
-              height: 100,
-              backgroundColor: AppColor.button,
-              color: Colors.white,
+              height: 60,
+              backgroundColor: AppColor.primary,
+              color: AppColor.secondary,
               onPressed: () {
                 if (_formkey.currentState!.validate()) {
                   final AdminModel dataAdmin = AdminModel(
@@ -63,11 +63,11 @@ class _AdminRegistrationPageState extends State<AdminRegistrationPage> {
             ),
             SizedBox(height: 20),
             Divider(color: Colors.black),
-            SizedBox(height: 50),
+            SizedBox(height: 160),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Sudah punya akun?', style: TextStyle(fontSize: 16)),
+                Text('Sudah jadi admin?', style: TextStyle(fontSize: 16)),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -75,7 +75,10 @@ class _AdminRegistrationPageState extends State<AdminRegistrationPage> {
                       MaterialPageRoute(builder: (context) => AdminLoginPage()),
                     );
                   },
-                  child: Text('Masuk', style: TextStyle(fontSize: 16)),
+                  child: Text(
+                    'Masuk',
+                    style: TextStyle(fontSize: 16, color: AppColor.textButton),
+                  ),
                 ),
               ],
             ),

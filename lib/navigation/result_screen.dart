@@ -48,7 +48,10 @@ class _ResultScreenState extends State<ResultScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Hasil Voting'),
+          title: Text(
+            'Hasil Voting',
+            style: TextStyle(color: AppColor.secondary),
+          ),
           centerTitle: true,
           backgroundColor: AppColor.primary,
         ),
@@ -82,6 +85,7 @@ class _ResultScreenState extends State<ResultScreen> {
     int votes,
   ) {
     return Card(
+      color: AppColor.background,
       margin: const EdgeInsets.all(12),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -129,7 +133,7 @@ class _ResultScreenState extends State<ResultScreen> {
               ? (MediaQuery.of(context).size.width - 80) * (percent / 100)
               : 0,
           decoration: BoxDecoration(
-            color: AppColor.primary,
+            color: AppColor.textButton,
             borderRadius: BorderRadius.circular(10),
           ),
         ),
