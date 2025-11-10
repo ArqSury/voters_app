@@ -56,7 +56,7 @@ class _AdminRegistrationPageState extends State<AdminRegistrationPage> {
                     password: passwordC.text,
                   );
                   DbHelper.registerAdmin(dataAdmin);
-                  ScaffoldMessenger.of(context).showSnackBar(buildSnackbar());
+                  Fluttertoast.showToast(msg: 'Anda berhasil mendaftar');
                   Navigator.pop(context);
                 }
               },
@@ -118,28 +118,6 @@ class _AdminRegistrationPageState extends State<AdminRegistrationPage> {
             },
             isPassword: true,
           ),
-        ],
-      ),
-    );
-  }
-
-  SnackBar buildSnackbar() {
-    return SnackBar(
-      backgroundColor: AppColor.secondary,
-      behavior: SnackBarBehavior.floating,
-      duration: Duration(seconds: 2),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-      ),
-      content: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage(
-              'assets/images/logo/logo_voterson_nobg.png',
-            ),
-          ),
-          SizedBox(width: 12),
-          Text('Anda berhasil mendaftar!'),
         ],
       ),
     );
