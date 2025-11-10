@@ -3,8 +3,8 @@ import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
 import 'package:voters_app/function/build_button.dart';
 import 'package:voters_app/function/build_textformfield.dart';
-import 'package:voters_app/views/_admin/admin_page.dart';
 import 'package:voters_app/views/_admin/admin_registration_page.dart';
+import 'package:voters_app/views/main_admin.dart';
 
 class AdminLoginPage extends StatefulWidget {
   const AdminLoginPage({super.key});
@@ -60,7 +60,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   if (data != null) {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => AdminPage()),
+                      MaterialPageRoute(builder: (context) => MainAdmin()),
                       (route) => false,
                     );
                   } else {
