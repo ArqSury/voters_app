@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
 import 'package:voters_app/function/build_button.dart';
@@ -71,61 +69,60 @@ class _AdminPageState extends State<AdminPage> {
                 ),
                 buildPresidentInput(),
                 buildVPInput(),
-                BuildButton(
-                  text: 'Simpan',
-                  width: 100,
-                  height: 60,
-                  backgroundColor: AppColor.primary,
-                  color: AppColor.secondary,
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      final pId = PresidentModel(
-                        name: presidentNameCon.text,
-                        education: presEduCon.text,
-                        vision: visionCon.text,
-                        mission: missionCon.text,
-                        experience: presExpCon.text,
-                        achivement: presAchiveCon.text,
-                        imageUrl: presImageCon.text,
-                      );
-                      final vId = VicePresidentModel(
-                        name: vicePresidentNameCon.text,
-                        education: viceEduCon.text,
-                        vision: visionCon.text,
-                        mission: missionCon.text,
-                        experience: viceExpCon.text,
-                        achivement: viceAchiveCon.text,
-                        imageUrl: viceImageCon.text,
-                      );
-                      await DbHelper.addCandidatePair(
-                        president: pId,
-                        vicePresident: vId,
-                      );
-                      Fluttertoast.showToast(
-                        msg: 'Pasangan berhasil didaftarkan',
-                      );
-                      presidentNameCon.clear();
-                      vicePresidentNameCon.clear();
-                      presEduCon.clear();
-                      viceEduCon.clear();
-                      presExpCon.clear();
-                      viceExpCon.clear();
-                      presAchiveCon.clear();
-                      viceAchiveCon.clear();
-                      presImageCon.clear();
-                      viceImageCon.clear();
-                      visionCon.clear();
-                      missionCon.clear();
-
-                      await loadCandidates();
-                    }
-                  },
-                ),
+                candidatesRegButton(),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  BuildButton candidatesRegButton() {
+    return BuildButton(
+      text: 'Simpan',
+      width: 100,
+      height: 60,
+      backgroundColor: AppColor.primary,
+      color: AppColor.secondary,
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          final pId = PresidentModel(
+            name: presidentNameCon.text,
+            education: presEduCon.text,
+            vision: visionCon.text,
+            mission: missionCon.text,
+            experience: presExpCon.text,
+            achivement: presAchiveCon.text,
+            imageUrl: presImageCon.text,
+          );
+          final vId = VicePresidentModel(
+            name: vicePresidentNameCon.text,
+            education: viceEduCon.text,
+            vision: visionCon.text,
+            mission: missionCon.text,
+            experience: viceExpCon.text,
+            achivement: viceAchiveCon.text,
+            imageUrl: viceImageCon.text,
+          );
+          await DbHelper.addCandidatePair(president: pId, vicePresident: vId);
+          ScaffoldMessenger.of(context).showSnackBar(buildSnackbar());
+          presidentNameCon.clear();
+          vicePresidentNameCon.clear();
+          presEduCon.clear();
+          viceEduCon.clear();
+          presExpCon.clear();
+          viceExpCon.clear();
+          presAchiveCon.clear();
+          viceAchiveCon.clear();
+          presImageCon.clear();
+          viceImageCon.clear();
+          visionCon.clear();
+          missionCon.clear();
+
+          await loadCandidates();
+        }
+      },
     );
   }
 
@@ -238,6 +235,28 @@ class _AdminPageState extends State<AdminPage> {
               return null;
             },
           ),
+        ],
+      ),
+    );
+  }
+
+  SnackBar buildSnackbar() {
+    return SnackBar(
+      backgroundColor: AppColor.secondary,
+      behavior: SnackBarBehavior.floating,
+      duration: Duration(seconds: 2),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
+      content: Row(
+        children: [
+          CircleAvatar(
+            backgroundImage: AssetImage(
+              'assets/images/logo/logo_voterson_nobg.png',
+            ),
+          ),
+          SizedBox(width: 12),
+          Text('Pasangan berhasil didaftarkan'),
         ],
       ),
     );
