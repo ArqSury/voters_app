@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
