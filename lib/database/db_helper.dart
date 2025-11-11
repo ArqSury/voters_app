@@ -431,7 +431,7 @@ class DbHelper {
     return await dbs.rawQuery('''SELECT 
       cp.id AS pairId, 
       p.name AS presidentName, 
-      v.name AS viceName, 
+      v.name AS vicePresidentName, 
       cp.votes AS votes 
       FROM $tableCandidatePair cp 
       JOIN $tablePresident p ON cp.presidentId = p.Id 
