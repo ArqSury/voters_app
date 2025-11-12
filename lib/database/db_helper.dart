@@ -140,6 +140,35 @@ class DbHelper {
     await dbs.delete(tableCitizen, where: 'id = ?', whereArgs: [id]);
   }
 
+  // ✅ Verify user identity
+  static Future<Map<String, dynamic>?> verifyCitizenIdentity({
+    required String name,
+    required String nik,
+    required String phone,
+  }) async {
+    final dbs = await db();
+    final result = await dbs.query(
+      tableCitizen,
+      where: 'name = ? AND nik = ? AND phone = ?',
+      whereArgs: [name, nik, phone],
+    );
+    return result.isNotEmpty ? result.first : null;
+  }
+
+  // ✅ Update password
+  static Future<int> updateCitizenPassword({
+    required int id,
+    required String newPassword,
+  }) async {
+    final dbs = await db();
+    return await dbs.update(
+      tableCitizen,
+      {'password': newPassword},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   //ADMIN
   static Future<void> registerAdmin(AdminModel admin) async {
     final dbs = await db();

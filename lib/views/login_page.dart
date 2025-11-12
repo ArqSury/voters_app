@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/database/db_helper.dart';
 import 'package:voters_app/function/build_button.dart';
+import 'package:voters_app/function/build_forgotpassword.dart';
 import 'package:voters_app/function/build_textformfield.dart';
 import 'package:voters_app/share_preference/preference_handler.dart';
 import 'package:voters_app/views/main_page.dart';
@@ -165,7 +166,10 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               TextButton(
                 onPressed: () {
-                  setState(() {});
+                  showDialog(
+                    context: context,
+                    builder: (context) => BuildForgotpassword(),
+                  );
                 },
                 child: Text(
                   'Lupa Kata Sandi?',
