@@ -64,7 +64,7 @@ class _UserProfileState extends State<UserProfile> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
-      (route) => true,
+      (route) => false,
     );
   }
 

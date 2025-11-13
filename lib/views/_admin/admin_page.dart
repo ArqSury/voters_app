@@ -70,71 +70,70 @@ class _AdminPageState extends State<AdminPage> {
                 ),
                 buildPresidentInput(),
                 buildVPInput(),
-                BuildButton(
-                  text: 'Simpan',
-                  width: 100,
-                  height: 60,
-                  backgroundColor: AppColor.primary,
-                  color: AppColor.secondary,
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      try {
-                        final pId = PresidentModel(
-                          name: presidentNameCon.text,
-                          education: presEduCon.text,
-                          vision: visionCon.text,
-                          mission: missionCon.text,
-                          experience: presExpCon.text,
-                          achivement: presAchiveCon.text,
-                          imageUrl: presImageCon.text,
-                        );
-                        final vId = VicePresidentModel(
-                          name: vicePresidentNameCon.text,
-                          education: viceEduCon.text,
-                          vision: visionCon.text,
-                          mission: missionCon.text,
-                          experience: viceExpCon.text,
-                          achivement: viceAchiveCon.text,
-                          imageUrl: viceImageCon.text,
-                        );
-                        await DbHelper.addCandidatePair(
-                          president: pId,
-                          vicePresident: vId,
-                        );
-                        Fluttertoast.showToast(
-                          msg: 'Pasangan berhasil didaftarkan',
-                        );
-
-                        _formKey.currentState!.reset();
-                        await loadCandidates();
-                      } catch (e) {
-                        Fluttertoast.showToast(
-                          msg: 'Gagal menyimpan pasangan: $e',
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                        );
-                      }
-
-                      presidentNameCon.clear();
-                      vicePresidentNameCon.clear();
-                      presEduCon.clear();
-                      viceEduCon.clear();
-                      presExpCon.clear();
-                      viceExpCon.clear();
-                      presAchiveCon.clear();
-                      viceAchiveCon.clear();
-                      presImageCon.clear();
-                      viceImageCon.clear();
-                      visionCon.clear();
-                      missionCon.clear();
-                    }
-                  },
-                ),
+                buildRegisButton(),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  BuildButton buildRegisButton() {
+    return BuildButton(
+      text: 'Simpan',
+      width: 100,
+      height: 60,
+      backgroundColor: AppColor.primary,
+      color: AppColor.secondary,
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          try {
+            final pId = PresidentModel(
+              name: presidentNameCon.text,
+              education: presEduCon.text,
+              vision: visionCon.text,
+              mission: missionCon.text,
+              experience: presExpCon.text,
+              achivement: presAchiveCon.text,
+              imageUrl: presImageCon.text,
+            );
+            final vId = VicePresidentModel(
+              name: vicePresidentNameCon.text,
+              education: viceEduCon.text,
+              vision: visionCon.text,
+              mission: missionCon.text,
+              experience: viceExpCon.text,
+              achivement: viceAchiveCon.text,
+              imageUrl: viceImageCon.text,
+            );
+            await DbHelper.addCandidatePair(president: pId, vicePresident: vId);
+            Fluttertoast.showToast(msg: 'Pasangan berhasil didaftarkan');
+
+            _formKey.currentState!.reset();
+            await loadCandidates();
+          } catch (e) {
+            Fluttertoast.showToast(
+              msg: 'Gagal menyimpan pasangan: $e',
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+            );
+          }
+
+          presidentNameCon.clear();
+          vicePresidentNameCon.clear();
+          presEduCon.clear();
+          viceEduCon.clear();
+          presExpCon.clear();
+          viceExpCon.clear();
+          presAchiveCon.clear();
+          viceAchiveCon.clear();
+          presImageCon.clear();
+          viceImageCon.clear();
+          visionCon.clear();
+          missionCon.clear();
+        }
+      },
     );
   }
 
