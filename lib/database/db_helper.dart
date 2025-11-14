@@ -20,7 +20,7 @@ class DbHelper {
       join(dbPath, 'voting.db'),
       onCreate: (db, version) async {
         await db.execute('PRAGMA foreign_keys = ON');
-        //Citizen Table
+
         await db.execute('''CREATE TABLE $tableCitizen(
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           name TEXT, 
@@ -28,12 +28,12 @@ class DbHelper {
           password TEXT, 
           nik int, 
           phone int)''');
-        //Admin Table
+
         await db.execute('''CREATE TABLE $tableAdmin (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           username TEXT UNIQUE, 
           password TEXT)''');
-        //President Table
+
         await db.execute('''CREATE TABLE $tablePresident (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           name TEXT, 
@@ -44,7 +44,7 @@ class DbHelper {
           mission TEXT, 
           imageUrl TEXT, 
           vicePresidentId int)''');
-        //Vice President Table
+
         await db.execute('''CREATE TABLE $tableVicePresident (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           name TEXT, 
@@ -54,7 +54,7 @@ class DbHelper {
           vision TEXT, 
           mission TEXT, 
           imageUrl TEXT)''');
-        //Candidate Pair Table
+
         await db.execute(
           '''CREATE TABLE $tableCandidatePair (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -65,7 +65,7 @@ class DbHelper {
           FOREIGN KEY (presidentId) REFERENCES $tablePresident (id), 
           FOREIGN KEY (vicePresidentId) REFERENCES $tableVicePresident (id))''',
         );
-        //Vote Table
+
         await db.execute('''CREATE TABLE $tableVote (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           citizenId int, 
@@ -78,7 +78,6 @@ class DbHelper {
     );
   }
 
-  //Citizen
   static Future<void> registerCitizen(CitizenModel citizen) async {
     final dbs = await db();
     await dbs.insert(
@@ -140,7 +139,6 @@ class DbHelper {
     await dbs.delete(tableCitizen, where: 'id = ?', whereArgs: [id]);
   }
 
-  // ✅ Verify user identity
   static Future<Map<String, dynamic>?> verifyCitizenIdentity({
     required String name,
     required String nik,
@@ -155,7 +153,6 @@ class DbHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
-  // ✅ Update password
   static Future<int> updateCitizenPassword({
     required int id,
     required String newPassword,
@@ -169,7 +166,6 @@ class DbHelper {
     );
   }
 
-  //ADMIN
   static Future<void> registerAdmin(AdminModel admin) async {
     final dbs = await db();
     await dbs.insert(
@@ -194,8 +190,6 @@ class DbHelper {
     }
     return null;
   }
-
-  // CANDIDATES
 
   static Future<void> registerPresident(PresidentModel president) async {
     final dbs = await db();
@@ -242,9 +236,7 @@ class DbHelper {
   static Future<void> resetAllVotes() async {
     final dbs = await db();
     await dbs.transaction((txn) async {
-      // 1. Reset all vote counts to 0
       await txn.rawUpdate('UPDATE $tableCandidatePair SET votes = 0');
-      // 2. Clear the vote records (citizen vote history)
       await txn.delete(tableVote);
     });
   }
@@ -376,13 +368,12 @@ class DbHelper {
     final dbs = await db();
 
     await dbs.transaction((txn) async {
-      // Get current pair count
       final oldCount =
           Sqflite.firstIntValue(
             await txn.rawQuery('SELECT COUNT(*) FROM $tableCandidatePair'),
           ) ??
           0;
-      // Get linked president and vice president IDs
+
       final List<Map<String, dynamic>> pair = await txn.query(
         tableCandidatePair,
         where: 'id = ?',
@@ -393,17 +384,13 @@ class DbHelper {
         final int presId = pair.first['presidentId'] as int;
         final int viceId = pair.first['vicePresidentId'] as int;
 
-        // Delete votes related to this pair first (if exist)
         await txn.delete(tableVote, where: 'pairId = ?', whereArgs: [pairId]);
-
-        // Delete candidate pair
         await txn.delete(
           tableCandidatePair,
           where: 'id = ?',
           whereArgs: [pairId],
         );
 
-        // Delete linked president and vice president
         await txn.delete(tablePresident, where: 'id = ?', whereArgs: [presId]);
 
         await txn.delete(
@@ -412,14 +399,11 @@ class DbHelper {
           whereArgs: [viceId],
         );
 
-        // Get new pair count
         final newCount =
             Sqflite.firstIntValue(
               await txn.rawQuery('SELECT COUNT(*) FROM $tableCandidatePair'),
             ) ??
             0;
-
-        // Reset votes only if count changed (it will when deleting)
         if (newCount != oldCount) {
           await resetAllVotes();
         }
@@ -427,7 +411,6 @@ class DbHelper {
     });
   }
 
-  // VOTING
   static Future<bool> hasCitizenVoted(int citizenId) async {
     final dbs = await db();
     final result = await dbs.rawQuery(
