@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CitizenFirebase {
-  final String id; // FirebaseAuth uid
+  final String id;
   final String email;
   final String name;
   final String province;
   final String city;
   final int nik;
   final String phone;
-  final String? imagePath; // path lokal di device
+  final String? imagePath;
   final DateTime createdAt;
 
   CitizenFirebase({
