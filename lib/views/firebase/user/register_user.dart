@@ -97,15 +97,10 @@ class _RegisterUserState extends State<RegisterUser> {
                     Text('Belum punya akun?'),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RegisterUser(),
-                          ),
-                        );
+                        Navigator.pop(context);
                       },
                       child: Text(
-                        'Daftar',
+                        'Masuk',
                         style: TextStyle(color: NewColor.redLight),
                       ),
                     ),
@@ -132,7 +127,7 @@ class _RegisterUserState extends State<RegisterUser> {
         setState(() => isLoading = true);
       },
       child: Text(
-        isLoading ? '.....' : 'MASUK',
+        isLoading ? '.....' : 'DAFTAR',
         style: TextStyle(color: Colors.white),
       ),
     );
