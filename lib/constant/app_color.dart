@@ -10,3 +10,10 @@ class AppColor {
   static const Color failed = Color(0xFFE64A19);
   static const Color bar = Color(0xFF81C784);
 }
+
+class NewColor {
+  static const Color redLight = Color(0xFF861A1A);
+  static const Color redDark = Color(0xFF520909);
+  static const Color gold = Color(0xFFEEC173);
+  static const Color cream = Color(0xFFE8DED0);
+}
