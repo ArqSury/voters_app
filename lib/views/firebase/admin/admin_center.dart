@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/services/firebase_service.dart';
 import 'package:voters_app/views/firebase/admin/branches/add_candidates.dart';
-import 'package:voters_app/views/firebase/admin/branches/add_pairs.dart';
+import 'package:voters_app/views/firebase/admin/branches/manage_voting.dart';
 import 'package:voters_app/views/firebase/admin/branches/admin_home.dart';
 import 'package:voters_app/views/firebase/admin/branches/list_candidates.dart';
-import 'package:voters_app/views/firebase/admin/branches/list_pairs.dart';
 import 'package:voters_app/views/firebase/admin/branches/register_admin.dart';
 import 'package:voters_app/views/firebase/admin/login_admin.dart';
 
@@ -24,9 +22,8 @@ class _AdminCenterState extends State<AdminCenter> {
   static const List<Widget> pages = [
     AdminHome(),
     AddCandidates(),
-    AddPairs(),
+    ManageVoting(),
     ListCandidates(),
-    ListPairs(),
     RegisterAdmin(),
   ];
 
@@ -66,8 +63,8 @@ class _AdminCenterState extends State<AdminCenter> {
               },
             ),
             buildTile(
-              icon: Icons.group,
-              title: 'Register Pasangan',
+              icon: Icons.timelapse,
+              title: 'Manage Voting',
               onTap: () {
                 onTapDrawer(2);
               },
@@ -79,19 +76,12 @@ class _AdminCenterState extends State<AdminCenter> {
                 onTapDrawer(3);
               },
             ),
-            buildTile(
-              icon: Icons.list_alt,
-              title: 'Daftar Pasangan',
-              onTap: () {
-                onTapDrawer(4);
-              },
-            ),
             if (widget.isSuperAdmin)
               buildTile(
                 icon: Icons.app_registration,
                 title: 'Register Admin',
                 onTap: () {
-                  onTapDrawer(5);
+                  onTapDrawer(4);
                 },
               ),
             Divider(),
