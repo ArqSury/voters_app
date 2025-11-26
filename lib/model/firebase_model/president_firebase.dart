@@ -4,13 +4,13 @@ class PresidenFirebase {
   final String id;
   final String name;
   final int age;
-  final String gender; // 'L' atau 'P'
+  final String gender;
   final String education;
   final String? experience;
   final String? achivement;
   final String vision;
   final String mission;
-  final String? imagePath; // path lokal
+  final String? imagePath;
 
   PresidenFirebase({
     required this.id,

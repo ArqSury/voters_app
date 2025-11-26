@@ -214,12 +214,15 @@ class FirebaseService {
     required ViceFirebase vice,
     String? description,
   }) async {
+    final snap = await _db.collection(_pairsCol).get();
+    final nextNumber = snap.docs.length + 1;
     final ref = _db.collection(_pairsCol).doc();
     final pair = PairsFirebase(
       id: ref.id,
       presidentId: president.id,
       viceId: vice.id,
       votes: 0,
+      number: nextNumber,
       description: description,
     );
     await ref.set(pair.toMap());
@@ -337,37 +340,20 @@ class FirebaseService {
             .collection(_presidentsCol)
             .doc(pair.presidentId)
             .get();
+        final pres = presDoc.exists ? PresidenFirebase.fromDoc(presDoc) : null;
         final viceDoc = await _db
             .collection(_vicePresidentsCol)
             .doc(pair.viceId)
             .get();
-        final pres = presDoc.exists
-            ? PresidenFirebase.fromDoc(presDoc)
-            : PresidenFirebase(
-                id: '',
-                name: 'Presiden',
-                age: 0,
-                gender: 'L',
-                education: '',
-                vision: '',
-                mission: '',
-              );
-        final vice = viceDoc.exists
-            ? ViceFirebase.fromDoc(viceDoc)
-            : ViceFirebase(
-                id: '',
-                name: 'Wakil Presiden',
-                age: 0,
-                gender: 'L',
-                education: '',
-                vision: '',
-                mission: '',
-              );
+        final vice = viceDoc.exists ? ViceFirebase.fromDoc(viceDoc) : null;
         result.add(
           PairWithNames(
             pair: pair,
-            presidentName: pres.name,
-            viceName: vice.name,
+            presidentName: pres?.name ?? "Presiden",
+            viceName: vice?.name ?? "Wakil Presiden",
+            presidentImagePath: pres?.imagePath,
+            viceImagePath: vice?.imagePath,
+            number: pair.number,
           ),
         );
       }

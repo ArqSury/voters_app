@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/model/firebase_model/citizen_firebase.dart';
 import 'package:voters_app/services/firebase_service.dart';
@@ -17,8 +18,8 @@ class UserData extends StatefulWidget {
 
 class _UserDataState extends State<UserData> {
   CitizenFirebase? citizen;
+  final bool _obscureText = true;
   bool loading = true;
-  bool _obscureText = true;
   File? pickedImage;
 
   final Map<String, List<String>> cityByProvince = {
@@ -41,18 +42,19 @@ class _UserDataState extends State<UserData> {
 
   Future<void> pickImage() async {
     try {
-      final XFile? xfile = await ImagePicker().pickImage(
+      final XFile? img = await ImagePicker().pickImage(
         source: ImageSource.gallery,
         maxWidth: 1024,
-        imageQuality: 75,
+        imageQuality: 80,
       );
-      if (xfile == null) return;
-      pickedImage = File(xfile.path);
-      final updated = citizen!.copyWith(imagePath: xfile.path);
+      if (img == null) return;
+      final dir = await getApplicationDocumentsDirectory();
+      final permanentPath =
+          "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+      final File newImage = await File(img.path).copy(permanentPath);
+      setState(() => pickedImage = newImage);
+      final updated = citizen!.copyWith(imagePath: permanentPath);
       await FirebaseService.instance.updateCitizenProfile(updated);
-      await loadCitizen();
-      setState(() {});
-      Fluttertoast.showToast(msg: "Foto profil diperbarui!");
     } catch (e) {
       print("Image error: $e");
     }
@@ -112,7 +114,7 @@ class _UserDataState extends State<UserData> {
             ),
             DropdownButtonFormField<String>(
               value: selectedProvince,
-              decoration: const InputDecoration(labelText: "Provinsi"),
+              decoration: InputDecoration(labelText: "Provinsi"),
               items: cityByProvince.keys
                   .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                   .toList(),
@@ -120,7 +122,7 @@ class _UserDataState extends State<UserData> {
             ),
             DropdownButtonFormField<String>(
               value: selectedCity,
-              decoration: const InputDecoration(labelText: "Kota"),
+              decoration: InputDecoration(labelText: "Kota"),
               items: selectedProvince == null
                   ? []
                   : cityByProvince[selectedProvince]!
@@ -133,7 +135,7 @@ class _UserDataState extends State<UserData> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
+            child: Text("Batal", style: TextStyle(color: Colors.red)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -149,7 +151,7 @@ class _UserDataState extends State<UserData> {
               Navigator.pop(context);
               Fluttertoast.showToast(msg: "Profil diperbarui!");
             },
-            child: const Text("Simpan"),
+            child: Text("Simpan", style: TextStyle(color: Colors.blue)),
           ),
         ],
       ),
@@ -212,10 +214,10 @@ class _UserDataState extends State<UserData> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
+            child: Text("Batal", style: TextStyle(color: Colors.red)),
           ),
           ElevatedButton(
-            child: const Text("Simpan"),
+            child: Text("Simpan", style: TextStyle(color: Colors.blue)),
             onPressed: () async {
               if (newPassC.text.trim() != confirmPassC.text.trim()) {
                 Fluttertoast.showToast(msg: "Password baru tidak sama!");
@@ -257,7 +259,7 @@ class _UserDataState extends State<UserData> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
       backgroundColor: NewColor.cream,
@@ -278,13 +280,16 @@ class _UserDataState extends State<UserData> {
           ElevatedButton.icon(
             onPressed: editProfileDialog,
             icon: Icon(Icons.edit),
-            label: Text("Edit Profil"),
+            label: Text("Edit Profil", style: TextStyle(color: Colors.black)),
           ),
+          SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: changePasswordDialog,
             icon: Icon(Icons.lock_reset),
-            label: Text("Ubah Password"),
+            label: Text("Ubah Password", style: TextStyle(color: Colors.black)),
           ),
+          SizedBox(height: 16),
+          Divider(),
           SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: logout,
@@ -317,28 +322,30 @@ class _UserDataState extends State<UserData> {
   Column topProfile() {
     return Column(
       children: [
-        GestureDetector(
-          onTap: pickImage,
-          child: CircleAvatar(
-            radius: 75,
-            backgroundColor: Colors.white,
-            backgroundImage: pickedImage != null
-                ? FileImage(pickedImage!)
-                : (citizen!.imagePath != null
-                      ? FileImage(File(citizen!.imagePath!))
-                      : const AssetImage(
-                              "assets/images/logo/logo_voterson_nobg.png",
-                            )
-                            as ImageProvider),
-          ),
-        ),
+        profilePhoto(),
         SizedBox(height: 10),
         Text(
           citizen!.name,
-          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
         ),
         Text(citizen!.email),
       ],
+    );
+  }
+
+  GestureDetector profilePhoto() {
+    return GestureDetector(
+      onTap: pickImage,
+      child: CircleAvatar(
+        radius: 75,
+        backgroundColor: Colors.white,
+        backgroundImage: pickedImage != null
+            ? FileImage(pickedImage!)
+            : (citizen!.imagePath != null &&
+                      File(citizen!.imagePath!).existsSync()
+                  ? FileImage(File(citizen!.imagePath!))
+                  : AssetImage('assets/images/logo/logo_voterson_nobg.png')),
+      ),
     );
   }
 

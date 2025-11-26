@@ -5,6 +5,7 @@ class PairsFirebase {
   final String presidentId;
   final String viceId;
   final int votes;
+  final int number;
   final String? description;
 
   PairsFirebase({
@@ -12,14 +13,17 @@ class PairsFirebase {
     required this.presidentId,
     required this.viceId,
     required this.votes,
+    required this.number,
     this.description,
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
+      'id': id,
       'presidentId': presidentId,
       'viceId': viceId,
       'votes': votes,
+      'number': number,
       'description': description,
     };
   }
@@ -33,6 +37,9 @@ class PairsFirebase {
       votes: (data['votes'] ?? 0) is int
           ? data['votes'] as int
           : int.tryParse(data['votes'].toString()) ?? 0,
+      number: (data['number'] ?? 0) is int
+          ? data['number']
+          : int.tryParse(data['number'].toString()) ?? 0,
       description: data['description']?.toString(),
     );
   }
