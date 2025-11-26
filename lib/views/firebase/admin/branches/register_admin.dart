@@ -2,21 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/services/firebase_service.dart';
-import 'package:voters_app/views/firebase/admin/admin_center.dart';
 
-class LoginAdmin extends StatefulWidget {
-  const LoginAdmin({super.key});
+class RegisterAdmin extends StatefulWidget {
+  const RegisterAdmin({super.key});
 
   @override
-  State<LoginAdmin> createState() => _LoginAdminState();
+  State<RegisterAdmin> createState() => _RegisterAdminState();
 }
 
-class _LoginAdminState extends State<LoginAdmin> {
+class _RegisterAdminState extends State<RegisterAdmin> {
   final _formKey = GlobalKey<FormState>();
+  final nameCon = TextEditingController();
   final emailCon = TextEditingController();
   final passCon = TextEditingController();
   bool obscure = true;
   bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkSuperAdmin();
+  }
+
+  Future<void> checkSuperAdmin() async {
+    final admin = await FirebaseService.instance.getCurrentAdmin();
+    if (admin == null || admin.isSuperAdmin == false) {
+      Fluttertoast.showToast(msg: "Akses ditolak. Hanya Super Admin!");
+      if (!mounted) return;
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,24 +40,27 @@ class _LoginAdminState extends State<LoginAdmin> {
       body: Center(
         child: SingleChildScrollView(
           child: Container(
-            width: double.infinity,
-            margin: EdgeInsets.all(20),
             padding: EdgeInsets.all(24),
-            decoration: boxDecor(),
-            child: buildLayer(context),
+            margin: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: NewColor.cream,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [BoxShadow(blurRadius: 16, color: NewColor.gold)],
+            ),
+            child: buildLayer(),
           ),
         ),
       ),
     );
   }
 
-  Form buildLayer(BuildContext context) {
+  Form buildLayer() {
     return Form(
       key: _formKey,
       child: Column(
         children: [
           Text(
-            "ADMIN",
+            "Register Admin",
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -51,8 +69,15 @@ class _LoginAdminState extends State<LoginAdmin> {
           ),
           SizedBox(height: 20),
           buildInput(
+            controller: nameCon,
+            hint: "Nama Admin",
+            validator: (v) =>
+                v == null || v.isEmpty ? "Nama wajib diisi" : null,
+          ),
+          SizedBox(height: 16),
+          buildInput(
             controller: emailCon,
-            hint: "Admin Email",
+            hint: "Email Admin",
             validator: (v) =>
                 v == null || !v.contains("@") ? "Email tidak valid" : null,
           ),
@@ -65,32 +90,22 @@ class _LoginAdminState extends State<LoginAdmin> {
                 v == null || v.length < 8 ? "Minimal 8 karakter" : null,
           ),
           SizedBox(height: 24),
-          adminLoginButton(),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: NewColor.redLight,
+              minimumSize: Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: register,
+            child: Text(
+              loading ? "..." : "DAFTARKAN ADMIN",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
-    );
-  }
-
-  ElevatedButton adminLoginButton() {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: NewColor.redLight,
-        minimumSize: Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      onPressed: login,
-      child: Text(
-        loading ? "..." : "MASUK",
-        style: TextStyle(color: Colors.white),
-      ),
-    );
-  }
-
-  BoxDecoration boxDecor() {
-    return BoxDecoration(
-      color: NewColor.cream,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(blurRadius: 16, color: NewColor.gold)],
     );
   }
 
@@ -119,26 +134,20 @@ class _LoginAdminState extends State<LoginAdmin> {
     );
   }
 
-  Future<void> login() async {
+  Future<void> register() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => loading = true);
     try {
-      await FirebaseService.instance.loginAdmin(
+      await FirebaseService.instance.registerAdmin(
         email: emailCon.text.trim(),
         password: passCon.text.trim(),
+        name: nameCon.text.trim(),
+        isSuperAdmin: false,
       );
-      final admin = await FirebaseService.instance.getCurrentAdmin();
-      if (admin == null) {
-        Fluttertoast.showToast(msg: "Akun admin tidak ditemukan.");
-        return;
-      }
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AdminCenter(isSuperAdmin: admin.isSuperAdmin),
-        ),
-        (route) => false,
+      Fluttertoast.showToast(
+        msg: "Admin berhasil dibuat! Verifikasi email diperlukan.",
       );
+      Navigator.pop(context);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     } finally {
