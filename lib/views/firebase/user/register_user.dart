@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:voters_app/constant/app_color.dart';
+import 'package:voters_app/services/firebase_service.dart';
 
 class RegisterUser extends StatefulWidget {
   const RegisterUser({super.key});
@@ -43,6 +45,7 @@ class _RegisterUserState extends State<RegisterUser> {
             physics: BouncingScrollPhysics(),
             child: Column(
               children: [
+                SizedBox(height: 40),
                 Text(
                   'Registrasi',
                   style: TextStyle(
@@ -53,15 +56,40 @@ class _RegisterUserState extends State<RegisterUser> {
                 ),
                 Divider(color: NewColor.gold, indent: 60, endIndent: 60),
                 Text(
-                  'Masukkan biodata Anda',
+                  'Pendaftaran akun',
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     color: NewColor.redLight,
                   ),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 20),
                 userInput(
-                  hintText: 'Masukan email anda',
+                  hintText: 'Nama',
+                  controller: nameCon,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '*Wajib Diisi';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                userInput(
+                  hintText: 'Nomor Induk Kependudukan (NIK)',
+                  controller: nikCon,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '*Wajib Diisi';
+                    } else if (value.length < 16) {
+                      return 'NIK minimal 16 angka';
+                    }
+                    return null;
+                  },
+                  isNumber: true,
+                ),
+                SizedBox(height: 20),
+                userInput(
+                  hintText: 'Email',
                   controller: emailCon,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -74,7 +102,7 @@ class _RegisterUserState extends State<RegisterUser> {
                 ),
                 SizedBox(height: 20),
                 userInput(
-                  hintText: 'Masukan kata sandi anda',
+                  hintText: 'Kata Sandi',
                   controller: passCon,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -86,11 +114,27 @@ class _RegisterUserState extends State<RegisterUser> {
                   },
                   isPassword: true,
                 ),
-                SizedBox(height: 40),
-                buttonLogin(),
-                SizedBox(height: 40),
-                Divider(color: NewColor.gold, indent: 20, endIndent: 20),
                 SizedBox(height: 20),
+                userInput(
+                  hintText: 'No. Hp',
+                  controller: phoneCon,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '*Wajib Diisi';
+                    }
+                    return null;
+                  },
+                  isPhone: true,
+                ),
+                SizedBox(height: 20),
+                dropProvince(),
+                SizedBox(height: 20),
+                dropCity(),
+                SizedBox(height: 20),
+                buttonLogout(),
+                SizedBox(height: 20),
+                Divider(color: NewColor.gold, indent: 20, endIndent: 20),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -114,7 +158,50 @@ class _RegisterUserState extends State<RegisterUser> {
     );
   }
 
-  ElevatedButton buttonLogin() {
+  DropdownButtonFormField<String> dropCity() {
+    return DropdownButtonFormField<String>(
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        fillColor: Colors.white,
+        filled: true,
+      ),
+      value: selectedCity,
+      hint: const Text("Pilih Kota"),
+      items: selectedProvince == null
+          ? []
+          : cityByProvince[selectedProvince]!
+                .map((city) => DropdownMenuItem(value: city, child: Text(city)))
+                .toList(),
+      onChanged: (value) {
+        setState(() => selectedCity = value);
+      },
+      validator: (v) => v == null ? "Pilih kota" : null,
+    );
+  }
+
+  DropdownButtonFormField<String> dropProvince() {
+    return DropdownButtonFormField<String>(
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        fillColor: Colors.white,
+        filled: true,
+      ),
+      value: selectedProvince,
+      hint: const Text("Pilih Provinsi"),
+      items: cityByProvince.keys
+          .map((prov) => DropdownMenuItem(value: prov, child: Text(prov)))
+          .toList(),
+      onChanged: (value) {
+        setState(() {
+          selectedProvince = value;
+          selectedCity = null;
+        });
+      },
+      validator: (v) => v == null ? "Pilih provinsi" : null,
+    );
+  }
+
+  ElevatedButton buttonLogout() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: NewColor.redLight,
@@ -123,8 +210,29 @@ class _RegisterUserState extends State<RegisterUser> {
         ),
       ),
       onPressed: () async {
-        if (_formKey.currentState!.validate()) return;
+        if (!_formKey.currentState!.validate()) return;
+        if (selectedProvince == null || selectedCity == null) {
+          Fluttertoast.showToast(msg: "Pilih provinsi dan kota");
+          return;
+        }
         setState(() => isLoading = true);
+        try {
+          await FirebaseService.instance.registerCitizen(
+            email: emailCon.text.trim(),
+            password: passCon.text.trim(),
+            name: nameCon.text.trim(),
+            province: selectedProvince!,
+            city: selectedCity!,
+            nik: int.parse(nikCon.text),
+            phone: phoneCon.text,
+          );
+          Fluttertoast.showToast(msg: "Registrasi berhasil!");
+          if (mounted) Navigator.pop(context);
+        } catch (e) {
+          Fluttertoast.showToast(msg: e.toString());
+        } finally {
+          if (mounted) setState(() => isLoading = false);
+        }
       },
       child: Text(
         isLoading ? '.....' : 'DAFTAR',
@@ -138,8 +246,15 @@ class _RegisterUserState extends State<RegisterUser> {
     String? hintText,
     String? Function(String?)? validator,
     bool isPassword = false,
+    bool isNumber = false,
+    bool isPhone = false,
   }) {
     return TextFormField(
+      keyboardType: isNumber
+          ? TextInputType.number
+          : isPhone
+          ? TextInputType.phone
+          : null,
       controller: controller,
       validator: validator,
       obscureText: isPassword ? obscureText : false,

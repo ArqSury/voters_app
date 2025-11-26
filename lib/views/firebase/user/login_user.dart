@@ -124,7 +124,7 @@ class _LoginUserState extends State<LoginUser> {
         ),
       ),
       onPressed: () async {
-        if (_formKey.currentState!.validate()) return;
+        if (!_formKey.currentState!.validate()) return;
         setState(() => isLoading = true);
         try {
           await FirebaseService.instance.loginCitizen(

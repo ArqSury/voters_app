@@ -54,4 +54,25 @@ class CitizenFirebase {
           DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
+
+  CitizenFirebase copyWith({
+    String? name,
+    String? province,
+    String? city,
+    int? nik,
+    String? phone,
+    String? imagePath,
+  }) {
+    return CitizenFirebase(
+      id: id,
+      email: email,
+      name: name ?? this.name,
+      province: province ?? this.province,
+      city: city ?? this.city,
+      nik: nik ?? this.nik,
+      phone: phone ?? this.phone,
+      imagePath: imagePath ?? this.imagePath,
+      createdAt: createdAt,
+    );
+  }
 }
