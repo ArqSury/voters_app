@@ -367,4 +367,21 @@ class FirebaseService {
       yield result;
     }
   }
+
+  Stream<bool> watchVotingStatus() {
+    return _db
+        .collection("settings")
+        .doc("voting_status")
+        .snapshots()
+        .map((d) => (d.data()?["isOpen"] ?? true));
+  }
+
+  Future<void> setVotingStatus(bool open) async {
+    await _db.collection("settings").doc("voting_status").set({"isOpen": open});
+  }
+
+  Future<bool> getVotingStatus() async {
+    final doc = await _db.collection("settings").doc("voting_status").get();
+    return doc.data()?["isOpen"] ?? true;
+  }
 }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
@@ -18,36 +19,51 @@ class _UserVoteState extends State<UserVote> {
   PageController controller = PageController(viewportFraction: 0.85);
 
   @override
+  void initState() {
+    super.initState();
+    checkVotingStatus();
+  }
+
+  Future<void> checkVotingStatus() async {
+    final isOpen = await FirebaseService.instance.getVotingStatus();
+    if (!isOpen && mounted) {
+      Fluttertoast.showToast(msg: "Voting sedang ditutup.");
+      Navigator.pop(context);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: NewColor.cream,
-      body: StreamBuilder<List<PairsFirebase>>(
-        stream: FirebaseService.instance.watchAllPairs(),
-        builder: (ctx, snap) {
-          if (!snap.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-          final pairs = snap.data!;
-          if (pairs.isEmpty) {
-            return Center(child: Text("Belum ada pasangan calon."));
-          }
-          return PageView.builder(
-            controller: controller,
-            itemCount: pairs.length,
-            itemBuilder: (ctx, i) {
-              return FutureBuilder(
-                future: loadPairDetail(pairs[i]),
-                builder: (ctx, AsyncSnapshot<PairWithFullData> data) {
-                  if (!data.hasData) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  return buildCard(data.data!);
-                },
-              );
-            },
-          );
-        },
-      ),
+    return Scaffold(backgroundColor: NewColor.cream, body: buildLayer());
+  }
+
+  StreamBuilder<List<PairsFirebase>> buildLayer() {
+    return StreamBuilder<List<PairsFirebase>>(
+      stream: FirebaseService.instance.watchAllPairs(),
+      builder: (ctx, snap) {
+        if (!snap.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final pairs = snap.data!;
+        if (pairs.isEmpty) {
+          return const Center(child: Text("Belum ada pasangan calon."));
+        }
+        return PageView.builder(
+          controller: controller,
+          itemCount: pairs.length,
+          itemBuilder: (ctx, i) {
+            return FutureBuilder(
+              future: loadPairDetail(pairs[i]),
+              builder: (ctx, AsyncSnapshot<PairWithFullData> data) {
+                if (!data.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return buildCard(data.data!);
+              },
+            );
+          },
+        );
+      },
     );
   }
 
@@ -68,82 +84,91 @@ class _UserVoteState extends State<UserVote> {
   }
 
   Widget buildCard(PairWithFullData data) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (ctx, child) {
-        return Transform.scale(scale: 1, child: child);
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(color: Colors.black12, blurRadius: 15, spreadRadius: 3),
-          ],
-        ),
-        child: Column(
-          children: [
-            Text(
-              "Pasangan No. ${data.pair.number}",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: NewColor.redLight,
-              ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 15, spreadRadius: 3),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            "Pasangan No. ${data.pair.number}",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: NewColor.redLight,
             ),
-            SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                profileImage(data.pres.imageBase64),
-                SizedBox(width: 16),
-                profileImage(data.vice.imageBase64),
-              ],
+          ),
+          SizedBox(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              profileImage(data.pres.imageBase64),
+              SizedBox(width: 16),
+              profileImage(data.vice.imageBase64),
+            ],
+          ),
+          SizedBox(height: 20),
+          Text(
+            "${data.pres.name}\n&\n${data.vice.name}",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20),
+          Text(
+            "${data.pair.description ?? data.pres.vision} - ${data.pres.name}",
+            textAlign: TextAlign.justify,
+            style: TextStyle(fontSize: 14),
+          ),
+          SizedBox(height: 8),
+          Text(
+            "${data.pair.description ?? data.vice.vision} - ${data.vice.name}",
+            textAlign: TextAlign.justify,
+            style: TextStyle(fontSize: 14),
+          ),
+          Spacer(),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: NewColor.redLight,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
             ),
-            SizedBox(height: 10),
-            Text(
-              "${data.pres.name} & ${data.vice.name}",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            onPressed: () => confirmVote(data),
+            child: const Text(
+              "Pilih Pasangan Ini",
+              style: TextStyle(fontSize: 18, color: Colors.white),
             ),
-            SizedBox(height: 8),
-            Text(
-              data.pair.description ?? "-",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
-            ),
-            Spacer(),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: NewColor.redLight,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 12,
-                ),
-              ),
-              onPressed: () => confirmVote(data),
-              child: Text(
-                "Pilih Pasangan Ini",
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ),
-            SizedBox(height: 10),
-          ],
-        ),
+          ),
+          SizedBox(height: 10),
+        ],
       ),
     );
   }
 
-  Widget profileImage(String? path) {
-    return CircleAvatar(
-      radius: 55,
-      backgroundColor: Colors.grey.shade300,
-      backgroundImage: path != null
-          ? NetworkImage(path)
-          : const AssetImage("assets/images/logo/logo_voterson_nobg.png")
-                as ImageProvider,
-    );
+  Widget profileImage(String? base64String) {
+    if (base64String == null || base64String.isEmpty) {
+      return const CircleAvatar(
+        radius: 55,
+        backgroundImage: AssetImage(
+          "assets/images/logo/logo_voterson_nobg.png",
+        ),
+      );
+    }
+    try {
+      final bytes = base64Decode(base64String);
+      return CircleAvatar(radius: 55, backgroundImage: MemoryImage(bytes));
+    } catch (e) {
+      return const CircleAvatar(
+        radius: 55,
+        backgroundImage: AssetImage(
+          "assets/images/logo/logo_voterson_nobg.png",
+        ),
+      );
+    }
   }
 
   void confirmVote(PairWithFullData data) async {
@@ -157,18 +182,18 @@ class _UserVoteState extends State<UserVote> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text("Konfirmasi Pilihan"),
+        title: const Text("Konfirmasi Pilihan"),
         content: Text(
           "Apakah Anda yakin memilih:\n\n"
           "${data.pres.name} & ${data.vice.name} ?",
         ),
         actions: [
           TextButton(
-            child: Text("Batal"),
+            child: const Text("Batal"),
             onPressed: () => Navigator.pop(context),
           ),
           TextButton(
-            child: Text("Pilih"),
+            child: const Text("Pilih"),
             onPressed: () async {
               Navigator.pop(context);
               final ok = await FirebaseService.instance.castVote(

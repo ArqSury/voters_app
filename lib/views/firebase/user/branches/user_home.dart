@@ -16,6 +16,7 @@ class _UserHomeState extends State<UserHome> {
   String currentTime = "";
   String currentDate = "";
   String greeting = "";
+  bool votingOpen = true;
   bool hasVoted = false;
   bool loading = true;
   Timer? timer;
@@ -49,6 +50,7 @@ class _UserHomeState extends State<UserHome> {
     final citizen = await FirebaseService.instance.getCurrentCitizen();
     greeting = _getGreetingMessage();
     hasVoted = await FirebaseService.instance.hasCitizenVoted(citizen!.id);
+    votingOpen = await FirebaseService.instance.getVotingStatus();
     setState(() => loading = false);
   }
 
@@ -149,9 +151,10 @@ class _UserHomeState extends State<UserHome> {
   }
 
   Widget _voteButton(BuildContext context) {
+    final disabled = hasVoted || !votingOpen;
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: hasVoted ? Colors.grey : NewColor.redLight,
+        backgroundColor: disabled ? Colors.grey : NewColor.redLight,
         padding: const EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -164,7 +167,11 @@ class _UserHomeState extends State<UserHome> {
               );
             },
       child: Text(
-        hasVoted ? "Anda sudah memilih" : "Mulai Voting",
+        !votingOpen
+            ? 'Voting Ditutup'
+            : hasVoted
+            ? "Anda sudah memilih"
+            : "Mulai Voting",
         style: const TextStyle(fontSize: 20, color: Colors.white),
       ),
     );
