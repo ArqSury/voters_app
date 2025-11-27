@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
-import 'package:voters_app/views/_admin/admin_login_page.dart';
-import 'package:voters_app/views/login_page.dart';
+import 'package:voters_app/views/firebase/admin/login_admin.dart';
+import 'package:voters_app/views/firebase/user/login_user.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -21,7 +21,7 @@ class _StartPageState extends State<StartPage> {
     Future.delayed(Duration(seconds: 3)).then((value) async {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => LoginUser()),
         (route) => false,
       );
     });
@@ -33,7 +33,7 @@ class _StartPageState extends State<StartPage> {
       onDoubleTap: () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => AdminLoginPage()),
+          MaterialPageRoute(builder: (context) => LoginAdmin()),
           (route) => false,
         );
       },

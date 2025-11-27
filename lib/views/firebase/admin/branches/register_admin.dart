@@ -147,7 +147,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
       Fluttertoast.showToast(
         msg: "Admin berhasil dibuat! Verifikasi email diperlukan.",
       );
-      Navigator.pop(context);
+      setState(() {});
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     } finally {

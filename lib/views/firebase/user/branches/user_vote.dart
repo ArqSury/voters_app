@@ -97,9 +97,9 @@ class _UserVoteState extends State<UserVote> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                profileImage(data.pres.imagePath),
+                profileImage(data.pres.imageBase64),
                 SizedBox(width: 16),
-                profileImage(data.vice.imagePath),
+                profileImage(data.vice.imageBase64),
               ],
             ),
             SizedBox(height: 10),

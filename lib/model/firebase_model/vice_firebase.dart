@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ViceFirebase {
@@ -10,7 +11,7 @@ class ViceFirebase {
   final String? achivement;
   final String vision;
   final String mission;
-  final String? imagePath;
+  final String? imageBase64;
 
   ViceFirebase({
     required this.id,
@@ -22,7 +23,7 @@ class ViceFirebase {
     this.achivement,
     required this.vision,
     required this.mission,
-    this.imagePath,
+    this.imageBase64,
   });
 
   Map<String, dynamic> toMap() {
@@ -35,7 +36,7 @@ class ViceFirebase {
       'achivement': achivement,
       'vision': vision,
       'mission': mission,
-      'imagePath': imagePath,
+      'imageBase64': imageBase64,
     };
   }
 
@@ -53,7 +54,7 @@ class ViceFirebase {
       achivement: data['achivement']?.toString(),
       vision: data['vision'] ?? '',
       mission: data['mission'] ?? '',
-      imagePath: data['imagePath']?.toString(),
+      imageBase64: data['imageBase64'],
     );
   }
 }

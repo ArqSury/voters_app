@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:voters_app/constant/app_color.dart';
 import 'package:voters_app/model/firebase_model/citizen_firebase.dart';
 import 'package:voters_app/services/firebase_service.dart';
@@ -41,23 +41,15 @@ class _UserDataState extends State<UserData> {
   }
 
   Future<void> pickImage() async {
-    try {
-      final XFile? img = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        imageQuality: 80,
-      );
-      if (img == null) return;
-      final dir = await getApplicationDocumentsDirectory();
-      final permanentPath =
-          "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
-      final File newImage = await File(img.path).copy(permanentPath);
-      setState(() => pickedImage = newImage);
-      final updated = citizen!.copyWith(imagePath: permanentPath);
-      await FirebaseService.instance.updateCitizenProfile(updated);
-    } catch (e) {
-      print("Image error: $e");
-    }
+    final img = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (img == null) return;
+    final bytes = await File(img.path).readAsBytes();
+    final base64Image = base64Encode(bytes);
+    final updated = citizen!.copyWith(imageBase64: base64Image);
+    await FirebaseService.instance.updateCitizenProfile(updated);
+    setState(() {
+      citizen = updated;
+    });
   }
 
   Future<void> editProfileDialog() async {
@@ -339,12 +331,10 @@ class _UserDataState extends State<UserData> {
       child: CircleAvatar(
         radius: 75,
         backgroundColor: Colors.white,
-        backgroundImage: pickedImage != null
-            ? FileImage(pickedImage!)
-            : (citizen!.imagePath != null &&
-                      File(citizen!.imagePath!).existsSync()
-                  ? FileImage(File(citizen!.imagePath!))
-                  : AssetImage('assets/images/logo/logo_voterson_nobg.png')),
+        backgroundImage: citizen!.imageBase64 != null
+            ? MemoryImage(base64Decode(citizen!.imageBase64!))
+            : const AssetImage("assets/images/logo/logo_voterson_nobg.png")
+                  as ImageProvider,
       ),
     );
   }

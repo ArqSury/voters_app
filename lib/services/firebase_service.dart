@@ -10,6 +10,7 @@ import 'package:voters_app/model/firebase_model/vote_firebase.dart';
 
 class FirebaseService {
   FirebaseService._internal(this._auth, this._db);
+  FirebaseFirestore get firestore => _db;
   static final FirebaseService instance = FirebaseService._internal(
     FirebaseAuth.instance,
     FirebaseFirestore.instance,
@@ -46,7 +47,7 @@ class FirebaseService {
       city: city,
       nik: nik,
       phone: phone,
-      imagePath: null,
+      imageBase64: null,
       createdAt: DateTime.now(),
     );
     await _db.collection(_citizensCol).doc(uid).set(citizen.toMap());
@@ -78,6 +79,11 @@ class FirebaseService {
 
   Future<void> updateCitizenProfile(CitizenFirebase citizen) async {
     await _db.collection(_citizensCol).doc(citizen.id).update(citizen.toMap());
+  }
+
+  Future<void> updateCitizenPhoto(String base64) async {
+    final uid = _auth.currentUser!.uid;
+    await _db.collection(_citizensCol).doc(uid).update({'imageBase64': base64});
   }
 
   Future<void> resetCitizenPasswordWithVerification({
@@ -138,7 +144,8 @@ class FirebaseService {
       await _auth.signOut();
       throw Exception('Akun ini bukan admin.');
     }
-    if (!(cred.user!.emailVerified)) {
+    final admin = AdminFirebase.fromDoc(doc);
+    if (!admin.isSuperAdmin && !(cred.user!.emailVerified)) {
       await _auth.signOut();
       throw Exception('Email admin belum diverifikasi (OTP).');
     }
@@ -156,13 +163,13 @@ class FirebaseService {
   Future<PresidenFirebase> addPresident({
     required String name,
     required int age,
-    required String gender, // 'L' atau 'P'
+    required String gender,
     required String education,
     String? experience,
     String? achivement,
     required String vision,
     required String mission,
-    String? imagePath,
+    String? imageBase64,
   }) async {
     final ref = _db.collection(_presidentsCol).doc();
     final pres = PresidenFirebase(
@@ -175,7 +182,7 @@ class FirebaseService {
       achivement: achivement,
       vision: vision,
       mission: mission,
-      imagePath: imagePath,
+      imageBase64: imageBase64,
     );
     await ref.set(pres.toMap());
     return pres;
@@ -190,7 +197,7 @@ class FirebaseService {
     String? achivement,
     required String vision,
     required String mission,
-    String? imagePath,
+    String? imageBase64,
   }) async {
     final ref = _db.collection(_vicePresidentsCol).doc();
     final vice = ViceFirebase(
@@ -203,7 +210,7 @@ class FirebaseService {
       achivement: achivement,
       vision: vision,
       mission: mission,
-      imagePath: imagePath,
+      imageBase64: imageBase64,
     );
     await ref.set(vice.toMap());
     return vice;
@@ -351,8 +358,8 @@ class FirebaseService {
             pair: pair,
             presidentName: pres?.name ?? "Presiden",
             viceName: vice?.name ?? "Wakil Presiden",
-            presidentImagePath: pres?.imagePath,
-            viceImagePath: vice?.imagePath,
+            presidentImagePath: pres?.imageBase64,
+            viceImagePath: vice?.imageBase64,
             number: pair.number,
           ),
         );

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:voters_app/constant/app_color.dart';
@@ -32,12 +34,10 @@ class _CandidateDataState extends State<CandidateData> {
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
-
           final pairs = snap.data!;
           if (pairs.isEmpty) {
             return const Center(child: Text("Belum ada pasangan calon."));
           }
-
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: pairs.length,
@@ -100,27 +100,23 @@ class _CandidateDataState extends State<CandidateData> {
             color: NewColor.redLight,
           ),
         ),
-
         subtitle: Text(
           "${d.pres.name} & ${d.vice.name}",
           style: const TextStyle(fontSize: 16),
         ),
-
         leading: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            circlePhoto(d.pres.imagePath),
+            circlePhoto(d.pres.imageBase64),
             const SizedBox(width: 6),
-            circlePhoto(d.vice.imagePath),
+            circlePhoto(d.vice.imageBase64),
           ],
         ),
-
         children: [
           buildDetailSection("Presiden", d.pres),
           const SizedBox(height: 20),
           buildDetailSection("Wakil Presiden", d.vice),
           const SizedBox(height: 10),
-
           if (d.pair.description != null)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,12 +127,12 @@ class _CandidateDataState extends State<CandidateData> {
     );
   }
 
-  Widget circlePhoto(String? path) {
+  Widget circlePhoto(String? base64) {
     return CircleAvatar(
       radius: 22,
       backgroundColor: Colors.grey.shade300,
-      backgroundImage: path != null
-          ? NetworkImage(path)
+      backgroundImage: base64 != null
+          ? MemoryImage(base64Decode(base64))
           : const AssetImage("assets/images/logo/logo_voterson_nobg.png")
                 as ImageProvider,
     );

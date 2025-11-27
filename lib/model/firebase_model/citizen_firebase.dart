@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CitizenFirebase {
@@ -8,7 +9,7 @@ class CitizenFirebase {
   final String city;
   final int nik;
   final String phone;
-  final String? imagePath;
+  final String? imageBase64;
   final DateTime createdAt;
 
   CitizenFirebase({
@@ -19,7 +20,7 @@ class CitizenFirebase {
     required this.city,
     required this.nik,
     required this.phone,
-    this.imagePath,
+    this.imageBase64,
     required this.createdAt,
   });
 
@@ -31,7 +32,7 @@ class CitizenFirebase {
       'city': city,
       'nik': nik,
       'phone': phone,
-      'imagePath': imagePath,
+      'imageBase64': imageBase64,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -48,7 +49,7 @@ class CitizenFirebase {
           ? data['nik'] as int
           : int.tryParse(data['nik'].toString()) ?? 0,
       phone: data['phone']?.toString() ?? '',
-      imagePath: data['imagePath']?.toString(),
+      imageBase64: data['imageBase64'],
       createdAt:
           (data['createdAt'] as Timestamp?)?.toDate() ??
           DateTime.fromMillisecondsSinceEpoch(0),
@@ -61,7 +62,7 @@ class CitizenFirebase {
     String? city,
     int? nik,
     String? phone,
-    String? imagePath,
+    String? imageBase64,
   }) {
     return CitizenFirebase(
       id: id,
@@ -71,7 +72,7 @@ class CitizenFirebase {
       city: city ?? this.city,
       nik: nik ?? this.nik,
       phone: phone ?? this.phone,
-      imagePath: imagePath ?? this.imagePath,
+      imageBase64: imageBase64 ?? imageBase64,
       createdAt: createdAt,
     );
   }

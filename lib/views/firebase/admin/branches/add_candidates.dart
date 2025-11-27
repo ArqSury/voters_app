@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:voters_app/services/firebase_service.dart';
 
@@ -11,9 +13,9 @@ class AddCandidates extends StatefulWidget {
 }
 
 class _AddCandidatesState extends State<AddCandidates> {
-  File? presImage;
-  File? viceImage;
   bool loading = false;
+  String? presImageBase64;
+  String? viceImageBase64;
 
   final presName = TextEditingController();
   final presAge = TextEditingController();
@@ -33,21 +35,31 @@ class _AddCandidatesState extends State<AddCandidates> {
   final viceMission = TextEditingController();
   String viceGender = "L";
 
-  Future<File?> pickImage() async {
-    final x = await ImagePicker().pickImage(source: ImageSource.gallery);
-    return x != null ? File(x.path) : null;
+  Future<void> pickImage(bool isPresident) async {
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (file == null) return;
+    final bytes = await File(file.path).readAsBytes();
+    final base64Str = base64Encode(bytes);
+    setState(() {
+      if (isPresident) {
+        presImageBase64 = base64Str;
+      } else {
+        viceImageBase64 = base64Str;
+      }
+    });
   }
 
   Future<void> saveCandidate() async {
-    if (presName.text.isEmpty ||
-        presAge.text.isEmpty ||
-        viceName.text.isEmpty ||
-        viceAge.text.isEmpty ||
-        presImage == null ||
-        viceImage == null) {
+    if (presImageBase64 == null || viceImageBase64 == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lengkapi semua data & foto kandidat.")),
+        const SnackBar(content: Text("Foto presiden & wakil wajib diisi.")),
       );
+      return;
+    }
+    if (presName.text.isEmpty || viceName.text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Nama wajib diisi.")));
       return;
     }
     setState(() => loading = true);
@@ -61,7 +73,7 @@ class _AddCandidatesState extends State<AddCandidates> {
         achivement: presAch.text,
         vision: presVision.text,
         mission: presMission.text,
-        imagePath: presImage!.path,
+        imageBase64: presImageBase64,
       );
       final vice = await FirebaseService.instance.addVice(
         name: viceName.text,
@@ -72,22 +84,17 @@ class _AddCandidatesState extends State<AddCandidates> {
         achivement: viceAch.text,
         vision: viceVision.text,
         mission: viceMission.text,
-        imagePath: viceImage!.path,
+        imageBase64: viceImageBase64,
       );
       await FirebaseService.instance.addCandidatePair(
         president: pres,
         vice: vice,
       );
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Kandidat berhasil disimpan!")),
-      );
+      Fluttertoast.showToast(msg: 'Kandidat berhasil didaftarkan');
     } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
-    } finally {
-      setState(() => loading = false);
     }
   }
 
@@ -108,14 +115,9 @@ class _AddCandidatesState extends State<AddCandidates> {
         children: [
           sectionTitle("Data Presiden"),
           SizedBox(height: 10),
-          Center(
-            child: pickPhotoBox(
-              file: presImage,
-              onTap: () async {
-                final img = await pickImage();
-                if (img != null) setState(() => presImage = img);
-              },
-            ),
+          buildPhotoPicker(
+            base64: presImageBase64,
+            onTap: () => pickImage(true),
           ),
           SizedBox(height: 16),
           genderPicker(
@@ -128,29 +130,24 @@ class _AddCandidatesState extends State<AddCandidates> {
           SizedBox(height: 10),
           input("Usia", presAge, type: TextInputType.number),
           SizedBox(height: 10),
-          input("Pendidikan", presEdu),
+          input("Pendidikan", presEdu, maxLines: 5),
           SizedBox(height: 10),
-          input("Pengalaman", presExp),
+          input("Pengalaman", presExp, maxLines: 5),
           SizedBox(height: 10),
-          input("Prestasi", presAch),
+          input("Prestasi", presAch, maxLines: 5),
           SizedBox(height: 10),
-          input("Visi", presVision, maxLines: 3),
+          input("Visi", presVision, maxLines: 5),
           SizedBox(height: 10),
-          input("Misi", presMission, maxLines: 3),
+          input("Misi", presMission, maxLines: 5),
           SizedBox(height: 30),
           Divider(),
           SizedBox(height: 20),
 
           sectionTitle("Data Wakil Presiden"),
           SizedBox(height: 10),
-          Center(
-            child: pickPhotoBox(
-              file: viceImage,
-              onTap: () async {
-                final img = await pickImage();
-                if (img != null) setState(() => viceImage = img);
-              },
-            ),
+          buildPhotoPicker(
+            base64: viceImageBase64,
+            onTap: () => pickImage(false),
           ),
           SizedBox(height: 16),
           genderPicker(
@@ -163,16 +160,15 @@ class _AddCandidatesState extends State<AddCandidates> {
           SizedBox(height: 10),
           input("Usia", viceAge, type: TextInputType.number),
           SizedBox(height: 10),
-          input("Pendidikan", viceEdu),
+          input("Pendidikan", viceEdu, maxLines: 5),
           SizedBox(height: 10),
-          input("Pengalaman", viceExp),
+          input("Pengalaman", viceExp, maxLines: 5),
           SizedBox(height: 10),
-          input("Prestasi", viceAch),
+          input("Prestasi", viceAch, maxLines: 5),
           SizedBox(height: 10),
-          input("Visi", viceVision, maxLines: 3),
+          input("Visi", viceVision, maxLines: 5),
           SizedBox(height: 10),
-          input("Misi", viceMission, maxLines: 3),
-
+          input("Misi", viceMission, maxLines: 5),
           SizedBox(height: 40),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -189,6 +185,27 @@ class _AddCandidatesState extends State<AddCandidates> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Center buildPhotoPicker({
+    required String? base64,
+    required VoidCallback onTap,
+  }) {
+    return Center(
+      child: GestureDetector(
+        onTap: onTap,
+        child: CircleAvatar(
+          radius: 60,
+          backgroundColor: Colors.grey.shade300,
+          backgroundImage: base64 != null
+              ? MemoryImage(base64Decode(base64))
+              : null,
+          child: base64 == null
+              ? Icon(Icons.camera_alt, size: 40, color: Colors.black54)
+              : null,
+        ),
       ),
     );
   }
@@ -214,24 +231,6 @@ class _AddCandidatesState extends State<AddCandidates> {
     return Text(
       text,
       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    );
-  }
-
-  Widget pickPhotoBox({required File? file, required Function() onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 130,
-        width: 130,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(16),
-          image: file != null
-              ? DecorationImage(image: FileImage(file), fit: BoxFit.cover)
-              : null,
-        ),
-        child: file == null ? const Icon(Icons.camera_alt, size: 36) : null,
-      ),
     );
   }
 
