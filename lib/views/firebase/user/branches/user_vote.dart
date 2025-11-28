@@ -202,8 +202,10 @@ class _UserVoteState extends State<UserVote> {
               );
               if (ok) {
                 Fluttertoast.showToast(msg: "Terima kasih sudah memilih!");
+                Navigator.pop(context);
               } else {
                 Fluttertoast.showToast(msg: "Anda sudah memilih sebelumnya!");
+                Navigator.pop(context);
               }
             },
           ),

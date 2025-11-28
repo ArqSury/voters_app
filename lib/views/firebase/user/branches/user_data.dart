@@ -66,63 +66,76 @@ class _UserDataState extends State<UserData> {
           "Edit Profil",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: Column(
-          spacing: 12,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            inputEdit(
-              labelText: 'Nama',
-              controller: nameC,
-              validator: (v) {
-                if (v == null || v.isEmpty) {
-                  return '*Wajib Diisi';
-                }
-                return null;
-              },
-            ),
-            inputEdit(
-              labelText: 'NIK',
-              controller: nikC,
-              validator: (v) {
-                if (v == null || v.isEmpty) {
-                  return '*Wajib Diisi';
-                } else if (v.length < 16) {
-                  return 'NIK minimal 16 angka';
-                }
-                return null;
-              },
-              isNumber: true,
-            ),
-            inputEdit(
-              labelText: 'No. HP',
-              controller: phoneC,
-              validator: (v) {
-                if (v == null || v.isEmpty) {
-                  return '*Wajib Diisi';
-                }
-                return null;
-              },
-              isPhone: true,
-            ),
-            DropdownButtonFormField<String>(
-              value: selectedProvince,
-              decoration: InputDecoration(labelText: "Provinsi"),
-              items: cityByProvince.keys
-                  .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                  .toList(),
-              onChanged: (v) => setState(() => selectedProvince = v),
-            ),
-            DropdownButtonFormField<String>(
-              value: selectedCity,
-              decoration: InputDecoration(labelText: "Kota"),
-              items: selectedProvince == null
-                  ? []
-                  : cityByProvince[selectedProvince]!
-                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                        .toList(),
-              onChanged: (v) => selectedCity = v,
-            ),
-          ],
+        content: StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Column(
+              spacing: 12,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                inputEdit(
+                  labelText: 'Nama',
+                  controller: nameC,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return '*Wajib Diisi';
+                    }
+                    return null;
+                  },
+                ),
+                inputEdit(
+                  labelText: 'NIK',
+                  controller: nikC,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return '*Wajib Diisi';
+                    } else if (v.length < 16) {
+                      return 'NIK minimal 16 angka';
+                    }
+                    return null;
+                  },
+                  isNumber: true,
+                ),
+                inputEdit(
+                  labelText: 'No. HP',
+                  controller: phoneC,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return '*Wajib Diisi';
+                    }
+                    return null;
+                  },
+                  isPhone: true,
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedProvince,
+                  decoration: InputDecoration(labelText: "Provinsi"),
+                  items: cityByProvince.keys
+                      .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                      .toList(),
+                  onChanged: (v) => setState(() {
+                    selectedProvince = v;
+                    selectedCity = null;
+                  }),
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedCity,
+                  decoration: InputDecoration(labelText: "Kota"),
+                  items: selectedProvince == null
+                      ? []
+                      : cityByProvince[selectedProvince]!
+                            .map(
+                              (c) => DropdownMenuItem(value: c, child: Text(c)),
+                            )
+                            .toList(),
+                  onChanged: (v) {
+                    setState(() {
+                      selectedCity = v;
+                    });
+                  },
+                ),
+              ],
+            );
+          },
         ),
         actions: [
           TextButton(
