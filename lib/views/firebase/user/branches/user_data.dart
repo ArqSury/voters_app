@@ -58,8 +58,6 @@ class _UserDataState extends State<UserData> {
     final nameC = TextEditingController(text: citizen!.name);
     final nikC = TextEditingController(text: citizen!.nik.toString());
     final phoneC = TextEditingController(text: citizen!.phone);
-    String? selectedProvince = citizen!.province;
-    String? selectedCity = citizen!.city;
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
