@@ -17,6 +17,7 @@ class UserData extends StatefulWidget {
 }
 
 class _UserDataState extends State<UserData> {
+  final formKey = GlobalKey<FormState>();
   CitizenFirebase? citizen;
   final bool _obscureText = true;
   bool loading = true;
@@ -39,6 +40,8 @@ class _UserDataState extends State<UserData> {
 
   Future<void> loadCitizen() async {
     citizen = await FirebaseService.instance.getCurrentCitizen();
+    selectedProvince = citizen!.province;
+    selectedCity = citizen!.city;
     setState(() => loading = false);
   }
 
@@ -66,80 +69,84 @@ class _UserDataState extends State<UserData> {
           "Edit Profil",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return Column(
-              spacing: 12,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                inputEdit(
-                  labelText: 'Nama',
-                  controller: nameC,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) {
-                      return '*Wajib Diisi';
-                    }
-                    return null;
-                  },
-                ),
-                inputEdit(
-                  labelText: 'NIK',
-                  controller: nikC,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) {
-                      return '*Wajib Diisi';
-                    } else if (v.length < 16) {
-                      return 'NIK minimal 16 angka';
-                    }
-                    return null;
-                  },
-                  isNumber: true,
-                ),
-                inputEdit(
-                  labelText: 'No. HP',
-                  controller: phoneC,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) {
-                      return '*Wajib Diisi';
-                    }
-                    return null;
-                  },
-                  isPhone: true,
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedProvince,
-                  decoration: InputDecoration(labelText: "Provinsi"),
-                  items: cityByProvince.keys
-                      .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                      .toList(),
-                  onChanged: (v) {
-                    setState(() {
-                      selectedProvince = v;
-                      selectedCity = null;
-                    });
-                  },
-                  validator: (v) => v == null ? 'Pilih Provinsi' : null,
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedCity,
-                  decoration: InputDecoration(labelText: "Kota"),
-                  items: selectedProvince == null
-                      ? []
-                      : cityByProvince[selectedProvince]!
-                            .map(
-                              (c) => DropdownMenuItem(value: c, child: Text(c)),
-                            )
-                            .toList(),
-                  onChanged: (v) {
-                    setState(() {
-                      selectedCity = v;
-                    });
-                  },
-                  validator: (v) => v == null ? 'Pilih Kota' : null,
-                ),
-              ],
-            );
-          },
+        content: Form(
+          key: formKey,
+          child: StatefulBuilder(
+            builder: (context, setStateDialog) {
+              return Column(
+                spacing: 12,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  inputEdit(
+                    labelText: 'Nama',
+                    controller: nameC,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return '*Wajib Diisi';
+                      }
+                      return null;
+                    },
+                  ),
+                  inputEdit(
+                    labelText: 'NIK',
+                    controller: nikC,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return '*Wajib Diisi';
+                      } else if (v.length < 16) {
+                        return 'NIK minimal 16 angka';
+                      }
+                      return null;
+                    },
+                    isNumber: true,
+                  ),
+                  inputEdit(
+                    labelText: 'No. HP',
+                    controller: phoneC,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return '*Wajib Diisi';
+                      }
+                      return null;
+                    },
+                    isPhone: true,
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedProvince,
+                    decoration: InputDecoration(labelText: "Provinsi"),
+                    items: cityByProvince.keys
+                        .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                        .toList(),
+                    onChanged: (v) {
+                      setStateDialog(() {
+                        selectedProvince = v;
+                        selectedCity = null;
+                      });
+                    },
+                    validator: (v) => v == null ? 'Pilih Provinsi' : null,
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedCity,
+                    decoration: InputDecoration(labelText: "Kota"),
+                    items: selectedProvince == null
+                        ? []
+                        : cityByProvince[selectedProvince]!
+                              .map(
+                                (c) =>
+                                    DropdownMenuItem(value: c, child: Text(c)),
+                              )
+                              .toList(),
+                    onChanged: (v) {
+                      setStateDialog(() {
+                        selectedCity = v;
+                      });
+                    },
+                    validator: (v) => v == null ? 'Pilih Kota' : null,
+                  ),
+                ],
+              );
+            },
+          ),
         ),
         actions: [
           TextButton(
