@@ -21,6 +21,8 @@ class _UserDataState extends State<UserData> {
   final bool _obscureText = true;
   bool loading = true;
   File? pickedImage;
+  String? selectedProvince;
+  String? selectedCity;
 
   final Map<String, List<String>> cityByProvince = {
     "Jawa Barat": ["Bandung", "Bekasi", "Bogor", "Depok", "Cimahi"],
@@ -112,10 +114,13 @@ class _UserDataState extends State<UserData> {
                   items: cityByProvince.keys
                       .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                       .toList(),
-                  onChanged: (v) => setState(() {
-                    selectedProvince = v;
-                    selectedCity = null;
-                  }),
+                  onChanged: (v) {
+                    setState(() {
+                      selectedProvince = v;
+                      selectedCity = null;
+                    });
+                  },
+                  validator: (v) => v == null ? 'Pilih Provinsi' : null,
                 ),
                 DropdownButtonFormField<String>(
                   value: selectedCity,
@@ -132,6 +137,7 @@ class _UserDataState extends State<UserData> {
                       selectedCity = v;
                     });
                   },
+                  validator: (v) => v == null ? 'Pilih Kota' : null,
                 ),
               ],
             );
